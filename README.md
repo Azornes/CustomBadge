@@ -42,7 +42,18 @@ Click the "Fork" button in the top right corner of this page.
 9. Value: paste the copied token
 10. Click "Add secret"
 
-### Step 4: Run workflow manually (first time)
+### Step 4: Add PAGE_ID secret (optional but recommended)
+
+1. Go to **Settings > Secrets and variables > Actions**
+2. Click "New repository secret"
+3. Name: `PAGE_ID`
+4. Value: `YOUR_USERNAME.YOUR_USERNAME` (replace with your GitHub username)
+   - For example: `Azornes.Azornes`
+5. Click "Add secret"
+
+**Note**: If you don't set this secret, the default value `CustomBadge.CustomBadge` will be used.
+
+### Step 5: Run workflow manually (first time)
 
 1. Go to the **Actions** tab
 2. Select the "Update Profile Views Badge" workflow
@@ -50,7 +61,7 @@ Click the "Fork" button in the top right corner of this page.
 4. Wait for the workflow to complete
 5. Check the logs - you'll find information about the created Gist and its ID
 
-### Step 5: Add GIST_ID to secrets
+### Step 6: Add GIST_ID to secrets
 
 After the first workflow run, check the logs in Actions. You'll find the message:
 
@@ -66,7 +77,7 @@ After the first workflow run, check the logs in Actions. You'll find the message
 5. Value: paste the copied ID
 6. Click "Add secret"
 
-### Step 6: Find the badge URL in Gist
+### Step 7: Find the badge URL in Gist
 
 After adding `GIST_ID`, run the workflow again. In the logs, you'll find:
 
@@ -78,7 +89,7 @@ After adding `GIST_ID`, run the workflow again. In the logs, you'll find:
 
 The `cache_bust` parameter ensures the badge always displays the latest version.
 
-### Step 7: Add badge to your profile
+### Step 8: Add badge to your profile
 
 Add the following code to README.md in your profile repository (username/username):
 
@@ -141,6 +152,9 @@ The [`generate-badge.js`](generate-badge.js) script includes several key functio
 
 - `GH_TOKEN` or `GITHUB_TOKEN` - GitHub Personal Access Token (required for Gist operations)
 - `GIST_ID` - ID of the Gist to update (optional, auto-created on first run)
+- `PAGE_ID` - Page identifier for visitor-badge API (optional, default: `CustomBadge.CustomBadge`)
+  - Format: `USERNAME.USERNAME` (e.g., `Azornes.Azornes`)
+  - Used to track views for specific GitHub profile
 - `PREVIEW_VIEWS` - Number for preview mode (optional, for testing)
 - `BADGE_STYLE` - Badge style: `classic` or `animated` (default: `animated`)
 
@@ -261,11 +275,23 @@ In preview mode:
 
 By default, the script fetches data from `visitor-badge.laobi.icu` for `page_id=CustomBadge.CustomBadge`.
 
-To track a different page, modify the [`fetchProfileViews()`](generate-badge.js:237) function in [`generate-badge.js`](generate-badge.js):
+**Recommended Method: Using PAGE_ID Secret**
+
+1. Go to **Settings > Secrets and variables > Actions**
+2. Click "New repository secret" (or edit existing `PAGE_ID`)
+3. Name: `PAGE_ID`
+4. Value: `YOUR_USERNAME.YOUR_USERNAME` (replace with your GitHub username)
+5. Click "Add secret"
+
+**Alternative Method: Modify Code**
+
+Edit the [`fetchProfileViews()`](generate-badge.js:229) function in [`generate-badge.js`](generate-badge.js):
 
 ```javascript
-const badgeUrl = 'https://visitor-badge.laobi.icu/badge?page_id=YOUR_USERNAME.YOUR_USERNAME';
+const pageId = process.env.PAGE_ID || 'YOUR_USERNAME.YOUR_USERNAME';
 ```
+
+The secret method is preferred as it doesn't require code changes and is easier to configure.
 
 ## 🐛 Troubleshooting
 

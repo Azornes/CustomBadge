@@ -40,6 +40,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIST_ID: ${{ secrets.GIST_ID }}
+          PAGE_ID: ${{ secrets.PAGE_ID }}
           BADGE_STYLE: ${{ github.event.inputs.badge_style || secrets.BADGE_STYLE || 'animated' }}
         run: |
           echo "🚀 Generating badge and updating Gist..."
