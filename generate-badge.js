@@ -229,7 +229,7 @@ async function getViewsFromGist(token, gistId) {
  */
 async function fetchProfileViews() {
     const pageId = process.env.PAGE_ID || 'CustomBadge.CustomBadge';
-    const badgeUrl = `https://visitor-badge.laobi.icu/badge?page_id=${pageId}`;
+    const badgeUrl = `https://visitor-badge.laobi.icu/badge?page_id=${pageId}.${pageId}`;
     
     console.log(`📡 Fetching badge SVG from: ${badgeUrl}`);
     console.log(`📝 Using PAGE_ID: ${pageId}\n`);
