@@ -228,7 +228,7 @@ async function getViewsFromGist(token, gistId) {
  * Fetches profile views by parsing SVG from visitor-badge badge URL
  */
 async function fetchProfileViews() {
-    const badgeUrl = 'https://visitor-badge.laobi.icu/badge?page_id=Azornes.Azornes';
+    const badgeUrl = 'https://visitor-badge.laobi.icu/badge?page_id=CustomBadge.CustomBadge';
     
     console.log(`📡 Fetching badge SVG from: ${badgeUrl}`);
     

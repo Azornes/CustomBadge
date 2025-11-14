@@ -207,7 +207,7 @@ The style selection priority:
 ### Data Source
 
 The badge fetches data from **visitor-badge.laobi.icu API**:
-- Fetches SVG badge for `page_id=Azornes.Azornes`
+- Fetches SVG badge for `page_id=CustomBadge.CustomBadge`
 - Parses the view count from the SVG `<text>` element
 - Falls back to local counter with random increment (1-50) if API fails
 - All data is stored in `views-count.json` with timestamp
@@ -259,7 +259,7 @@ In preview mode:
 
 ### Track Different Page
 
-By default, the script fetches data from `visitor-badge.laobi.icu` for `page_id=Azornes.Azornes`.
+By default, the script fetches data from `visitor-badge.laobi.icu` for `page_id=CustomBadge.CustomBadge`.
 
 To track a different page, modify the [`fetchProfileViews()`](generate-badge.js:237) function in [`generate-badge.js`](generate-badge.js):
 
