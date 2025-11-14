@@ -17,39 +17,27 @@ jobs:
   update-badge:
     runs-on: ubuntu-latest
     
-    permissions:
-      contents: write
-    
     steps:
       - name: 📥 Checkout repository
         uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_TOKEN || github.token }}
       
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
       
-      - name: 📊 Generate badge
+      - name: 📊 Generate and upload badge to Gist
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GIST_ID: ${{ secrets.GIST_ID }}
         run: |
-          echo "Generowanie badge..."
+          echo "🚀 Generowanie badge i aktualizacja Gist..."
           node generate-badge.js
-      
-      - name: 📝 Commit and push changes
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
           
-          # Sprawdź czy są zmiany
-          if [[ -n $(git status --porcelain) ]]; then
-            git add badge.svg views-count.json
-            git commit -m "🔄 Auto-update: Profile views badge [$(date +'%Y-%m-%d %H:%M:%S')]"
-            git push
-            echo "✅ Badge zaktualizowany!"
+          if [ $? -eq 0 ]; then
+            echo "✅ Badge zaktualizowany w Gist!"
           else
-            echo "ℹ️ Brak zmian do zapisania"
+            echo "❌ Wystąpił błąd podczas aktualizacji"
+            exit 1
           fi

@@ -4,6 +4,7 @@ const https = require('https');
 // Konfiguracja
 const VIEWS_FILE = 'views-count.json';
 const BADGE_FILE = 'badge.svg';
+const GIST_ID = process.env.GIST_ID; // ID prywatnego Gist do przechowywania danych
 
 // Kolory
 const HEADER_BG = '#1f2937';  // gray-800
@@ -38,6 +39,162 @@ function saveViews(views) {
         lastUpdated: new Date().toISOString()
     };
     fs.writeFileSync(VIEWS_FILE, JSON.stringify(data, null, 2));
+}
+
+/**
+ * Wykonuje żądanie HTTPS i zwraca obietnicę z wynikiem
+ */
+function httpsRequest(url, options, postData = null) {
+    return new Promise((resolve, reject) => {
+        const req = https.request(url, options, (res) => {
+            let data = '';
+            
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            
+            res.on('end', () => {
+                resolve({
+                    statusCode: res.statusCode,
+                    data: data
+                });
+            });
+        });
+        
+        req.on('error', reject);
+        
+        if (postData) {
+            req.write(postData);
+        }
+        
+        req.end();
+    });
+}
+
+/**
+ * Pobiera zawartość Gist
+ */
+async function getGist(token, gistId) {
+    if (!gistId) {
+        return null;
+    }
+    
+    const url = `https://api.github.com/gists/${gistId}`;
+    const options = {
+        headers: {
+            'Authorization': `token ${token}`,
+            'User-Agent': 'CustomBadge',
+            'Accept': 'application/vnd.github.v3+json'
+        }
+    };
+    
+    try {
+        const response = await httpsRequest(url, options);
+        
+        if (response.statusCode === 200) {
+            return JSON.parse(response.data);
+        }
+        
+        console.log(`⚠️  Nie można pobrać Gist (kod: ${response.statusCode})`);
+        return null;
+    } catch (error) {
+        console.log(`⚠️  Błąd podczas pobierania Gist: ${error.message}`);
+        return null;
+    }
+}
+
+/**
+ * Aktualizuje lub tworzy Gist z plikami badge i views
+ */
+async function updateGist(token, gistId, badgeContent, viewsContent) {
+    const files = {
+        [BADGE_FILE]: {
+            content: badgeContent
+        },
+        [VIEWS_FILE]: {
+            content: JSON.stringify(viewsContent, null, 2)
+        }
+    };
+    
+    let url, method, gistData;
+    
+    if (gistId) {
+        // Aktualizuj istniejący Gist
+        url = `https://api.github.com/gists/${gistId}`;
+        method = 'PATCH';
+        gistData = { files };
+        console.log(`📝 Aktualizuję Gist: ${gistId}`);
+    } else {
+        // Utwórz nowy Gist
+        url = 'https://api.github.com/gists';
+        method = 'POST';
+        gistData = {
+            description: 'GitHub Profile Views Badge - Auto-generated',
+            public: false,
+            files: files
+        };
+        console.log('📝 Tworzę nowy prywatny Gist...');
+    }
+    
+    const options = {
+        method: method,
+        headers: {
+            'Authorization': `token ${token}`,
+            'User-Agent': 'CustomBadge',
+            'Accept': 'application/vnd.github.v3+json',
+            'Content-Type': 'application/json'
+        }
+    };
+    
+    try {
+        const response = await httpsRequest(url, options, JSON.stringify(gistData));
+        
+        if (response.statusCode === 200 || response.statusCode === 201) {
+            const result = JSON.parse(response.data);
+            console.log(`✅ Gist ${gistId ? 'zaktualizowany' : 'utworzony'} pomyślnie!`);
+            
+            if (!gistId) {
+                console.log(`\n🔑 WAŻNE! Zapisz to GIST_ID jako secret w GitHub Actions:`);
+                console.log(`   GIST_ID=${result.id}\n`);
+            }
+            
+            console.log(`📋 URL do Gist: ${result.html_url}`);
+            console.log(`🔗 Badge URL: ${result.files[BADGE_FILE].raw_url}\n`);
+            
+            return result;
+        } else {
+            console.error(`❌ Błąd ${method}: ${response.statusCode}`);
+            console.error(response.data);
+            return null;
+        }
+    } catch (error) {
+        console.error(`❌ Błąd podczas ${gistId ? 'aktualizacji' : 'tworzenia'} Gist:`, error.message);
+        return null;
+    }
+}
+
+/**
+ * Pobiera liczbę odwiedzin z Gist lub lokalnego pliku
+ */
+async function getViewsFromGist(token, gistId) {
+    if (!token || !gistId) {
+        return getViews(); // Fallback do lokalnego pliku
+    }
+    
+    const gist = await getGist(token, gistId);
+    
+    if (gist && gist.files && gist.files[VIEWS_FILE]) {
+        try {
+            const content = gist.files[VIEWS_FILE].content;
+            const data = JSON.parse(content);
+            console.log(`📊 Odczytano z Gist: ${data.views} odwiedzin\n`);
+            return data.views || 0;
+        } catch (error) {
+            console.log(`⚠️  Błąd parsowania danych z Gist: ${error.message}`);
+        }
+    }
+    
+    return getViews(); // Fallback do lokalnego pliku
 }
 
 /**
@@ -259,22 +416,42 @@ async function main() {
     try {
         console.log('🚀 Rozpoczynam generowanie badge...\n');
         
+        const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+        
+        if (!token) {
+            console.error('❌ Brak tokenu GitHub!');
+            console.error('   Ustaw zmienną środowiskową GH_TOKEN lub GITHUB_TOKEN');
+            process.exit(1);
+        }
+        
         // Pobierz liczbę odwiedzin
         const views = await fetchProfileViews();
-        
-        // Zapisz nową liczbę odwiedzin
-        saveViews(views);
-        console.log(`✅ Zapisano liczbę odwiedzin: ${views}\n`);
         
         // Generuj SVG badge
         const badgeSVG = generateBadgeSVG(views);
         
-        // Zapisz badge do pliku
-        fs.writeFileSync(BADGE_FILE, badgeSVG);
-        console.log(`✅ Wygenerowano badge: ${BADGE_FILE}`);
-        console.log(`📊 Badge wyświetla: ${views} odwiedzin\n`);
+        // Przygotuj dane do zapisania
+        const viewsData = {
+            views: views,
+            lastUpdated: new Date().toISOString()
+        };
         
-        console.log('🎉 Gotowe!');
+        // Zapisz lokalnie (dla compatibility i fallback)
+        saveViews(views);
+        fs.writeFileSync(BADGE_FILE, badgeSVG);
+        console.log(`💾 Zapisano lokalnie: ${BADGE_FILE}, ${VIEWS_FILE}\n`);
+        
+        // Zapisz do Gist
+        const result = await updateGist(token, GIST_ID, badgeSVG, viewsData);
+        
+        if (result) {
+            console.log(`✅ Badge zaktualizowany w Gist!`);
+            console.log(`📊 Wyświetla: ${views} odwiedzin\n`);
+            console.log('🎉 Gotowe!');
+        } else {
+            console.log('⚠️  Nie udało się zaktualizować Gist, ale pliki lokalne zostały zapisane');
+        }
+        
     } catch (error) {
         console.error('❌ Błąd:', error.message);
         process.exit(1);

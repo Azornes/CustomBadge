@@ -19,3 +19,7 @@ Thumbs.db
 # Temporary files
 *.tmp
 .cache/
+
+# Badge files (stored in Gist)
+badge.svg
+views-count.json

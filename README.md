@@ -2,7 +2,7 @@
 
 ![Profile Views Badge](badge.svg)
 
-Automatycznie generowany, pionowy badge pokazujący liczbę odwiedzin profilu GitHub.
+Automatycznie generowany, pionowy badge pokazujący liczbę odwiedzin profilu GitHub, przechowywany w prywatnym Gist.
 
 ## 🎯 Funkcje
 
@@ -10,6 +10,7 @@ Automatycznie generowany, pionowy badge pokazujący liczbę odwiedzin profilu Gi
 - 🔄 Automatyczna aktualizacja co godzinę przez GitHub Actions
 - 🎨 Ikona GitHub na górze, cyfry odwiedzin poniżej
 - 📊 Śledzenie odwiedzin profilu GitHub
+- 🔐 Dane przechowywane w prywatnym Gist (nie zaśmiecają repozytorium)
 
 ## 🚀 Instalacja
 
@@ -28,7 +29,8 @@ Kliknij przycisk "Fork" w prawym górnym rogu tej strony.
 2. Kliknij "Generate new token (classic)"
 3. Nadaj nazwę: `PROFILE_VIEWS_TOKEN`
 4. Wybierz uprawnienia:
-   - `repo` (pełen dostęp)
+   - `repo` (pełen dostęp do repozytoriów)
+   - `gist` (dostęp do zarządzania gistami)
 5. Kliknij "Generate token" i skopiuj token
 6. W swoim forku przejdź do **Settings > Secrets and variables > Actions**
 7. Kliknij "New repository secret"
@@ -41,16 +43,44 @@ Kliknij przycisk "Fork" w prawym górnym rogu tej strony.
 1. Przejdź do zakładki **Actions**
 2. Wybierz workflow "Update Profile Views Badge"
 3. Kliknij "Run workflow" > "Run workflow"
+4. Poczekaj na zakończenie workflow
+5. Sprawdź logi - znajdziesz tam informację o utworzeniu Gist i jego ID
 
-### Krok 5: Dodaj badge do swojego profilu
+### Krok 5: Dodaj GIST_ID do secrets
+
+Po pierwszym uruchomieniu workflow sprawdź logi w Actions. Znajdziesz tam komunikat:
+
+```
+🔑 WAŻNE! Zapisz to GIST_ID jako secret w GitHub Actions:
+   GIST_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+1. Skopiuj ID Gist z logów
+2. Przejdź do **Settings > Secrets and variables > Actions**
+3. Kliknij "New repository secret"
+4. Nazwa: `GIST_ID`
+5. Wartość: wklej skopiowane ID
+6. Kliknij "Add secret"
+
+### Krok 6: Znajdź URL do badge w Gist
+
+Po dodaniu `GIST_ID`, uruchom workflow ponownie. W logach znajdziesz:
+
+```
+🔗 Badge URL: https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg
+```
+
+### Krok 7: Dodaj badge do swojego profilu
 
 Dodaj następujący kod do README.md w swoim repozytorium profilu (username/username):
 
 ```markdown
-![Profile Views](https://raw.githubusercontent.com/TWOJA_NAZWA_UŻYTKOWNIKA/CustomBadge/main/badge.svg)
+![Profile Views](https://gist.githubusercontent.com/TWOJA_NAZWA_UŻYTKOWNIKA/GIST_ID/raw/badge.svg)
 ```
 
-Zamień `TWOJA_NAZWA_UŻYTKOWNIKA` na swoją nazwę użytkownika GitHub.
+Zamień:
+- `TWOJA_NAZWA_UŻYTKOWNIKA` na swoją nazwę użytkownika GitHub
+- `GIST_ID` na ID twojego Gist (znajdziesz w logach workflow)
 
 ## 📁 Struktura projektu
 
@@ -81,8 +111,8 @@ Badge jest pionowy i składa się z:
    - Wykorzystuje GitHub Traffic API do pobierania rzeczywistych danych
    - W przypadku błędu używa lokalnego licznika jako fallback
 3. **Generuje SVG** - tworzy pionowy badge z ikoną GitHub i cyframi
-4. **Zapisuje zmiany** - commituje `badge.svg` i `views-count.json`
-5. **Auto-update** - badge w README automatycznie się aktualizuje
+4. **Zapisuje do Gist** - aktualizuje prywatny Gist z plikami `badge.svg` i `views-count.json`
+5. **Auto-update** - badge w README automatycznie się aktualizuje z Gist
 
 ### Źródło danych
 
@@ -129,13 +159,29 @@ Możesz zmodyfikować logikę w funkcji [`fetchProfileViews()`](generate-badge.j
 ### Badge nie aktualizuje się
 
 1. Sprawdź czy workflow się wykonał: **Actions** → "Update Profile Views Badge"
-2. Sprawdź czy `GH_TOKEN` jest poprawnie ustawiony w Secrets
-3. Upewnij się że token ma uprawnienia `repo`
+2. Sprawdź logi workflow - czy utworzył/zaktualizował Gist
+3. Sprawdź czy `GH_TOKEN` jest poprawnie ustawiony w Secrets
+4. Sprawdź czy `GIST_ID` jest ustawiony (po pierwszym uruchomieniu)
+5. Upewnij się że token ma uprawnienia `repo` i `gist`
 
 ### "Bad credentials" lub błąd 401
 
 Token wygasł lub nie ma odpowiednich uprawnień. Wygeneruj nowy token z uprawnieniami:
 - ✅ `repo` (Full control of private repositories)
+- ✅ `gist` (Create and update gists)
+
+### Nie widzę GIST_ID w logach
+
+Sprawdź czy:
+1. Token ma uprawnienia `gist`
+2. Workflow wykonał się pomyślnie
+3. W logach jest komunikat "Tworzę nowy prywatny Gist..."
+
+### Badge nie wyświetla się w README
+
+1. Sprawdź czy URL jest poprawny (skopiowany z logów workflow)
+2. URL powinien być w formacie: `https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg`
+3. Gist musi być utworzony (sprawdź na https://gist.github.com/)
 
 ### Badge pokazuje 0 odwiedzin
 
@@ -162,8 +208,15 @@ Dodaj badge do swojego profilu (w repozytorium `username/username`):
 ```markdown
 ## 📊 Profile Stats
 
-![Profile Views](https://raw.githubusercontent.com/Azornes/CustomBadge/main/badge.svg)
+![Profile Views](https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg)
 ```
+
+## 🔍 Dlaczego Gist?
+
+- **Brak zaśmiecania repozytorium** - nie ma ciągłych commitów co godzinę
+- **Prywatność** - Gist jest prywatny, tylko badge.svg jest publiczny przez raw URL
+- **Łatwiejsze zarządzanie** - wszystkie dane w jednym miejscu
+- **Szybsze aktualizacje** - brak potrzeby push do repozytorium
 
 ---
 
