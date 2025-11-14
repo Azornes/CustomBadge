@@ -53,9 +53,12 @@
 2. Click **"Run workflow"** → **"Run workflow"**
 3. After completion, check the logs, you'll find:
    ```
-   🔗 Badge URL: https://gist.githubusercontent.com/YOUR_USERNAME/GIST_ID/raw/badge.svg
+   🔗 Your stable badge URL is ready!
+      Use this URL in your README.md or on your profile:
+      https://gist.githubusercontent.com/YOUR_USERNAME/GIST_ID/raw/badge.svg?cache_bust=TIMESTAMP
+      (This URL is permanent and always points to the latest version of the badge)
    ```
-4. **COPY this URL**
+4. **COPY this URL** (the one with `cache_bust` parameter prevents caching issues)
 
 ### 7️⃣ Add badge to your profile
 
@@ -95,9 +98,33 @@
 ## 📝 Notes
 
 - The badge will be updated automatically every hour
-- The Gist is private, but badge.svg is accessible via raw URL
+- The Gist is private, but `badge.svg` is accessible via raw URL
 - You don't need to do anything else - everything works automatically!
 - You can delete `badge.svg` and `views-count.json` files from the local repository (they are in `.gitignore`)
+- The badge fetches real-time data from visitor-badge API (`visitor-badge.laobi.icu`)
+- Cache-busting parameter in URL ensures badge always displays the latest version
+
+## 🧪 Testing Locally
+
+You can test the badge locally before deploying:
+
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Set environment variables:
+   ```bash
+   set GH_TOKEN=your_token_here
+   set GIST_ID=your_gist_id (optional)
+   ```
+4. Run in preview mode:
+   ```bash
+   node generate-badge.js --preview=12345
+   ```
+
+This will:
+- Generate a badge with 12345 views
+- Save it locally as `badge.svg`
+- Open it in your browser (Windows)
+- Skip Gist update (unless `GIST_ID` is set)
 
 ## 🎯 What's next?
 
