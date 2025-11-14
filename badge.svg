@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="56" height="104" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GitHub Profile Views">
+  <title>GitHub Profile Views: 14</title>
+  
+  <!-- Header z ikoną GitHub -->
+  <rect x="0" y="0" width="56" height="40" fill="#1f2937" rx="4" ry="4"/>
+  <rect x="0" y="4" width="56" height="36" fill="#1f2937"/>
+  
+  <!-- Ikona GitHub -->
+  <g transform="translate(20, 12)">
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" fill="white" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+  </g>
+  
+  <!-- Cyfra 1 -->
+  <rect x="0" y="40" width="56" height="32" fill="#3b82f6"/>
+  
+  <text x="28" y="61" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
+  
+  <!-- Cyfra 4 (ostatnia) -->
+  <rect x="0" y="72" width="56" height="4" fill="#3b82f6"/>
+  <rect x="0" y="76" width="56" height="24" fill="#3b82f6"/>
+  <rect x="0" y="100" width="56" height="4" fill="#3b82f6" rx="4" ry="4"/>
+  
+  <text x="28" y="93" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">4</text>
+  
+</svg>

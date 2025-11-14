@@ -1,0 +1,52 @@
+name: Update Profile Views Badge
+
+on:
+  # Uruchamiaj co godzinę
+  schedule:
+    - cron: '0 * * * *'
+  
+  # Pozwól na ręczne uruchomienie
+  workflow_dispatch:
+  
+  # Uruchamiaj przy push do main (dla testów)
+  push:
+    branches:
+      - main
+
+jobs:
+  update-badge:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: write
+    
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN || github.token }}
+      
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: 📊 Generate badge
+        run: |
+          echo "Generowanie badge..."
+          node generate-badge.js
+      
+      - name: 📝 Commit and push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          # Sprawdź czy są zmiany
+          if [[ -n $(git status --porcelain) ]]; then
+            git add badge.svg views-count.json
+            git commit -m "🔄 Auto-update: Profile views badge [$(date +'%Y-%m-%d %H:%M:%S')]"
+            git push
+            echo "✅ Badge zaktualizowany!"
+          else
+            echo "ℹ️ Brak zmian do zapisania"
+          fi

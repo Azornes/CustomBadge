@@ -1,0 +1,19 @@
+{
+  "name": "custom-github-badge",
+  "version": "1.0.0",
+  "description": "Automatycznie generowany custom badge z liczbą odwiedzin profilu GitHub",
+  "main": "generate-badge.js",
+  "scripts": {
+    "generate": "node generate-badge.js"
+  },
+  "keywords": [
+    "github",
+    "badge",
+    "profile-views",
+    "svg",
+    "github-actions"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {}
+}
