@@ -182,7 +182,9 @@ async function updateGist(token, gistId, badgeContent, viewsContent) {
             // Construct and log the stable, non-versioned raw URL for the badge
             const ownerLogin = result.owner.login;
             const finalGistId = result.id;
-            const stableBadgeUrl = `https://gist.githubusercontent.com/${ownerLogin}/${finalGistId}/raw/${BADGE_FILE}`;
+            // Add a cache-busting query parameter to prevent caching issues.
+            const cacheBust = new Date().getTime();
+            const stableBadgeUrl = `https://gist.githubusercontent.com/${ownerLogin}/${finalGistId}/raw/${BADGE_FILE}?cache_bust=${cacheBust}`;
 
             console.log(`\n🔗 Your stable badge URL is ready!`);
             console.log(`   Use this URL in your README.md or on your profile:`);
