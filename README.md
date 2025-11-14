@@ -275,33 +275,6 @@ const badgeUrl = 'https://visitor-badge.laobi.icu/badge?page_id=YOUR_USERNAME.YO
 4. Check if `GIST_ID` is set (after first run)
 5. Ensure the token has `repo` and `gist` permissions
 
-### "Bad credentials" or 401 error
-
-Token expired or lacks permissions. Generate a new token with permissions:
-- ✅ `repo` (Full control of private repositories)
-- ✅ `gist` (Create and update gists)
-
-### No GIST_ID in logs
-
-Check if:
-1. Token has `gist` permissions
-2. Workflow executed successfully
-3. Logs contain "Creating new private Gist..."
-
-### Badge Not Displaying in README
-
-1. Check if the URL is correct (copied from workflow logs)
-2. URL should be in format: `https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg`
-3. Gist must be created (check at https://gist.github.com/)
-
-### Badge Shows Low Visit Count
-
-The visitor badge API tracks views from when it was first accessed. If your page is new or rarely visited, the count may be low. The badge will increment as more people visit your profile.
-
-### Workflow Not Running Automatically
-
-GitHub Actions may disable crons in inactive repositories. Run the workflow manually occasionally or add a commit.
-
 ## 📝 License
 
 MIT License - you can freely use and modify this project!
@@ -309,68 +282,6 @@ MIT License - you can freely use and modify this project!
 ## 🤝 Contributing
 
 Issues and Pull Requests are welcome!
-
----
-
-## 🛠️ Technical Details
-
-### Dependencies
-
-The script uses **only built-in Node.js modules**:
-- `fs` - File system operations (reading/writing local files)
-- `https` - Making API requests to GitHub and visitor-badge
-- `child_process` - Opening browser in preview mode (Windows only)
-
-No external npm packages required! This makes the project lightweight and easy to maintain.
-
-### Data Flow
-
-1. **Fetch Views** → Script makes HTTPS GET request to `visitor-badge.laobi.icu`
-2. **Parse SVG** → Extracts view count using regex: `/<text[^>]*textLength="140\.0"[^>]*>(\d+)<\/text>/`
-3. **Generate Badge** → Creates SVG with dynamic height based on digit count
-4. **Save Locally** → Writes `badge.svg` and `views-count.json` to disk
-5. **Update Gist** → PATCH request to GitHub API with new content
-6. **Return URL** → Provides stable raw URL with cache-busting parameter
-
-### Fallback Mechanism
-
-The script has multiple fallback layers:
-
-1. **Primary**: Fetch from visitor-badge API
-2. **Fallback 1**: Use local counter if API fails
-3. **Fallback 2**: Start from 0 if no local file exists
-
-Local counter uses random increment (1-50) to simulate realistic view growth.
-
-### SVG Generation Details
-
-The badge is dynamically sized:
-- **Width**: Fixed at 40px
-- **Height**: 40px (header) + 32px × number of digits
-- **Header**: Contains GitHub icon on gray background (`#1f2937`)
-- **Digits**: Each digit on blue background (`#3b82f6`)
-- **Corners**: Rounded corners (4px radius) at top and bottom
-
-Each digit is rendered separately, allowing for vertical stacking.
-
----
-
-## 📸 Usage Example
-
-Add the badge to your profile (in `username/username` repository):
-
-```markdown
-## 📊 Profile Stats
-
-![Profile Views](https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg)
-```
-
-## 🔍 Why Gist?
-
-- **No repository clutter** - no constant commits every hour
-- **Privacy** - Gist is private, only badge.svg is public via raw URL
-- **Easier management** - all data in one place
-- **Faster updates** - no need to push to repository
 
 ---
 
