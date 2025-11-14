@@ -287,29 +287,30 @@ function generateBadgeSVG(views) {
     const viewsString = String(views);
     const numDigits = viewsString.length;
     
-    // Dimensions
-    const width = 56;
+    // Dimensions (narrower version)
+    const width = 40;
     const headerHeight = 40;
     const digitHeight = 32;
     const totalHeight = headerHeight + (numDigits * digitHeight);
+    const cornerRadius = 4;
     
     // Start SVG
     let svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg width="${width}" height="${totalHeight}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GitHub Profile Views">
   <title>GitHub Profile Views: ${views}</title>
   
-  <!-- Header with GitHub icon -->
-  <rect x="0" y="0" width="${width}" height="${headerHeight}" fill="${HEADER_BG}" rx="4" ry="4"/>
-  <rect x="0" y="4" width="${width}" height="${headerHeight - 4}" fill="${HEADER_BG}"/>
+  <!-- Header with GitHub icon (rounded top) -->
+  <rect x="0" y="0" width="${width}" height="${headerHeight}" fill="${HEADER_BG}" rx="${cornerRadius}" ry="${cornerRadius}"/>
+  <rect x="0" y="${cornerRadius}" width="${width}" height="${headerHeight - cornerRadius}" fill="${HEADER_BG}"/>
   
-  <!-- GitHub icon -->
-  <g transform="translate(20, 12)">
+  <!-- GitHub icon (adjusted for narrower width) -->
+  <g transform="translate(12, 12)">
     <svg width="16" height="16" viewBox="0 0 16 16">
       ${GITHUB_ICON}
     </svg>
   </g>
   
-`;
+ `;
 
     // Generate digits
     let currentY = headerHeight;
@@ -319,26 +320,27 @@ function generateBadgeSVG(views) {
         
         // Digit background
         if (isLast) {
-            // Last digit - rounded corners at bottom
+            // Last digit - rounded corners at bottom.
+            // First, draw a fully rounded rectangle.
             svg += `  <!-- Digit ${digit} (last) -->
-  <rect x="0" y="${currentY}" width="${width}" height="4" fill="${DIGIT_BG}"/>
-  <rect x="0" y="${currentY + 4}" width="${width}" height="${digitHeight - 8}" fill="${DIGIT_BG}"/>
-  <rect x="0" y="${currentY + digitHeight - 4}" width="${width}" height="4" fill="${DIGIT_BG}" rx="4" ry="4"/>
+  <rect x="0" y="${currentY}" width="${width}" height="${digitHeight}" fill="${DIGIT_BG}" rx="${cornerRadius}" ry="${cornerRadius}"/>
+  <!-- Then, draw a sharp-cornered rectangle on top to cover the top rounded corners. -->
+  <rect x="0" y="${currentY}" width="${width}" height="${digitHeight - cornerRadius}" fill="${DIGIT_BG}"/>
   
-`;
+ `;
         } else {
             // Middle digit - no rounding
             svg += `  <!-- Digit ${digit} -->
   <rect x="0" y="${currentY}" width="${width}" height="${digitHeight}" fill="${DIGIT_BG}"/>
   
-`;
+ `;
         }
         
-        // Digit text
-        svg += `  <text x="28" y="${currentY + 21}" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="${TEXT_COLOR}" text-anchor="middle">${digit}</text>
+        // Digit text (adjusted center for narrower width)
+        svg += `  <text x="20" y="${currentY + 21}" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="${TEXT_COLOR}" text-anchor="middle">${digit}</text>
   
-`;
-        
+ `;
+
         currentY += digitHeight;
     }
     
@@ -347,7 +349,6 @@ function generateBadgeSVG(views) {
     
     return svg;
 }
-
 /**
  * Main function
  */
@@ -355,48 +356,70 @@ async function main() {
     try {
         console.log('🚀 Starting badge generation...\n');
         
+        // Check for preview mode
+        let previewViews = null;
+        const previewArg = process.argv.find(arg => arg.startsWith('--preview='));
+        if (previewArg) {
+            previewViews = parseInt(previewArg.split('=')[1], 10);
+        } else if (process.env.PREVIEW_VIEWS) {
+            previewViews = parseInt(process.env.PREVIEW_VIEWS, 10);
+        }
+        
+        if (previewViews && previewViews > 0) {
+            console.log(`🖼️  Preview mode: Using ${previewViews} views\n`);
+        }
+        
         const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
         
-        if (!token) {
+        // Token required only if not pure preview (i.e., if fetching views or updating Gist)
+        const needsToken = !previewViews || GIST_ID;
+        if (needsToken && !token) {
             console.error('❌ No GitHub token!');
             console.error('   Set environment variable GH_TOKEN or GITHUB_TOKEN');
             process.exit(1);
         }
         
-        // Test token by checking user info
-        console.log('🔐 Testing GitHub token...');
-        try {
-            const userResponse = await httpsRequest('https://api.github.com/user', {
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'User-Agent': 'CustomBadge',
-                    'Accept': 'application/vnd.github.v3+json'
+        if (token) {
+            // Test token by checking user info (skip in pure preview)
+            console.log('🔐 Testing GitHub token...');
+            try {
+                const userResponse = await httpsRequest('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'User-Agent': 'CustomBadge',
+                        'Accept': 'application/vnd.github.v3+json'
+                    }
+                });
+                
+                if (userResponse.statusCode === 200) {
+                    const userData = JSON.parse(userResponse.data);
+                    console.log(`✅ Token is valid for user: ${userData.login}`);
+                } else {
+                    console.log(`⚠️  Token test failed with status: ${userResponse.statusCode}`);
+                    console.log(`   Response: ${userResponse.data}`);
                 }
-            });
-            
-            if (userResponse.statusCode === 200) {
-                const userData = JSON.parse(userResponse.data);
-                console.log(`✅ Token is valid for user: ${userData.login}`);
-            } else {
-                console.log(`⚠️  Token test failed with status: ${userResponse.statusCode}`);
-                console.log(`   Response: ${userResponse.data}`);
+                
+                // Check token scopes
+                const scopeResponse = await httpsRequest('https://api.github.com', {
+                    method: 'HEAD',
+                    headers: {
+                        'Authorization': `token ${token}`,
+                        'User-Agent': 'CustomBadge'
+                    }
+                });
+                console.log(`📋 Token scopes check completed\n`);
+            } catch (error) {
+                console.log(`⚠️  Token validation error: ${error.message}\n`);
             }
-            
-            // Check token scopes
-            const scopeResponse = await httpsRequest('https://api.github.com', {
-                method: 'HEAD',
-                headers: {
-                    'Authorization': `token ${token}`,
-                    'User-Agent': 'CustomBadge'
-                }
-            });
-            console.log(`📋 Token scopes check completed\n`);
-        } catch (error) {
-            console.log(`⚠️  Token validation error: ${error.message}\n`);
         }
         
-        // Fetch number of views
-        const views = await fetchProfileViews();
+        // Fetch or use preview number of views
+        let views;
+        if (previewViews && previewViews > 0) {
+            views = previewViews;
+        } else {
+            views = await fetchProfileViews();
+        }
         
         // Generate SVG badge
         const badgeSVG = generateBadgeSVG(views);
@@ -412,15 +435,28 @@ async function main() {
         fs.writeFileSync(BADGE_FILE, badgeSVG);
         console.log(`💾 Saved locally: ${BADGE_FILE}, ${VIEWS_FILE}\n`);
         
-        // Save to Gist
-        const result = await updateGist(token, GIST_ID, badgeSVG, viewsData);
+        // Open preview in browser if preview mode (Windows)
+        if (previewViews && previewViews > 0) {
+            const { exec } = require('child_process');
+            exec(`start ${BADGE_FILE}`, (err) => {
+                if (err) console.log(`⚠️  Could not open browser: ${err.message}`);
+            });
+            console.log(`🖼️  Preview opened in browser!`);
+        }
         
-        if (result) {
-            console.log(`✅ Badge updated in Gist!`);
-            console.log(`📊 Displays: ${views} views\n`);
-            console.log('🎉 Done!');
-        } else {
-            console.log('⚠️  Failed to update Gist, but local files were saved');
+        // Save to Gist (skip in preview mode if no GIST_ID)
+        if (token && (!previewViews || GIST_ID)) {
+            const result = await updateGist(token, GIST_ID, badgeSVG, viewsData);
+            
+            if (result) {
+                console.log(`✅ Badge updated in Gist!`);
+                console.log(`📊 Displays: ${views} views\n`);
+                console.log('🎉 Done!');
+            } else {
+                console.log('⚠️  Failed to update Gist, but local files were saved');
+            }
+        } else if (previewViews && !GIST_ID) {
+            console.log('🖼️  Preview mode: Skipping Gist update (no GIST_ID or token).');
         }
         
     } catch (error) {
