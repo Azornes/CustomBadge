@@ -179,12 +179,19 @@ async function updateGist(token, gistId, badgeContent, viewsContent) {
                 console.log(`   GIST_ID=${result.id}\n`);
             }
             
-            // Mask sensitive URLs in logs
-            const maskedGistUrl = result.html_url.replace(/\/[a-f0-9]{32,}$/, '/***');
-            const maskedBadgeUrl = result.files[BADGE_FILE].raw_url.replace(/\/[a-f0-9]{32,}$/, '/***');
-            console.log(`📋 Gist URL: ${maskedGistUrl}`);
-            console.log(`🔗 Badge URL: ${maskedBadgeUrl}\n`);
+            // Construct and log the stable, non-versioned raw URL for the badge
+            const ownerLogin = result.owner.login;
+            const finalGistId = result.id;
+            const stableBadgeUrl = `https://gist.githubusercontent.com/${ownerLogin}/${finalGistId}/raw/${BADGE_FILE}`;
+
+            console.log(`\n🔗 Your stable badge URL is ready!`);
+            console.log(`   Use this URL in your README.md or on your profile:`);
+            console.log(`   ${stableBadgeUrl}`);
+            console.log(`   (This URL is permanent and always points to the latest version of the badge)\n`);
             
+            // For reference, show the Gist URL too
+            console.log(`   You can view the Gist itself at:`);
+            console.log(`   ${result.html_url}\n`);
             return result;
         } else {
             console.error(`❌ ${method} error: ${response.statusCode}`);
