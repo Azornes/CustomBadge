@@ -1,5 +1,7 @@
 # Custom GitHub Profile Views Badge
 
+![Profile Views Badge](badge.svg)
+
 Automatycznie generowany, pionowy badge pokazujący liczbę odwiedzin profilu GitHub.
 
 ## 🎯 Funkcje
