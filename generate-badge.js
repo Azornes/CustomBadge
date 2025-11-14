@@ -222,132 +222,46 @@ async function getViewsFromGist(token, gistId) {
 }
 
 /**
- * Fetches repository views from GitHub Traffic API
- * Uses GitHub Traffic API to fetch visit statistics for the profile repository
+ * Fetches profile views by parsing SVG from visitor-badge badge URL
  */
 async function fetchProfileViews() {
-    const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+    const badgeUrl = 'https://visitor-badge.laobi.icu/badge?page_id=Azornes.Azornes';
     
-    if (!token) {
-        console.log('⚠️  No GitHub token - use GH_TOKEN or GITHUB_TOKEN');
-        console.log('📊 Using local counter as fallback\n');
-        return incrementLocalCounter();
-    }
-
-    // Get username from repo (format: username/reponame)
-    const githubRepository = process.env.GITHUB_REPOSITORY;
+    console.log(`📡 Fetching badge SVG from: ${badgeUrl}`);
     
-    if (!githubRepository) {
-        console.log('⚠️  No GITHUB_REPOSITORY - using local counter\n');
-        return incrementLocalCounter();
-    }
-
-    const [owner, repo] = githubRepository.split('/');
-    
-    // API endpoint for profile repository statistics (username/username)
-    // or current repository
-    const profileRepo = `${owner}/${owner}`;
-    const apiUrl = `https://api.github.com/repos/${profileRepo}/traffic/views`;
-    
-    console.log(`📡 Fetching statistics from: ${profileRepo}`);
-    
-    return new Promise((resolve, reject) => {
-        const options = {
+    try {
+        const response = await httpsRequest(badgeUrl, {
             headers: {
-                'Authorization': `token ${token}`,
-                'User-Agent': 'CustomBadge',
-                'Accept': 'application/vnd.github.v3+json'
+                'User-Agent': 'CustomBadge'
             }
-        };
-
-        https.get(apiUrl, options, (res) => {
-            let data = '';
-
-            res.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            res.on('end', () => {
-                if (res.statusCode === 200) {
-                    try {
-                        const json = JSON.parse(data);
-                        const totalViews = json.count || 0;
-                        const uniqueViews = json.uniques || 0;
-                        
-                        console.log(`✅ Statistics fetched successfully:`);
-                        console.log(`   - Total visits: ${totalViews}`);
-                        console.log(`   - Unique visits: ${uniqueViews}\n`);
-                        
-                        // Use total number of visits
-                        resolve(totalViews > 0 ? totalViews : incrementLocalCounter());
-                    } catch (error) {
-                        console.log(`⚠️  JSON parsing error: ${error.message}`);
-                        resolve(incrementLocalCounter());
-                    }
-                } else if (res.statusCode === 404) {
-                    console.log(`⚠️  Profile repository ${profileRepo} does not exist or no access`);
-                    console.log(`💡 Using statistics from current repository: ${githubRepository}\n`);
-                    
-                    // Try to fetch statistics from current repo
-                    fetchCurrentRepoViews(token, githubRepository).then(resolve).catch(() => {
-                        resolve(incrementLocalCounter());
-                    });
-                } else {
-                    console.log(`⚠️  GitHub API returned code: ${res.statusCode}`);
-                    console.log(`📊 Using local counter as fallback\n`);
-                    resolve(incrementLocalCounter());
-                }
-            });
-        }).on('error', (error) => {
-            console.log(`❌ API connection error: ${error.message}`);
-            console.log(`📊 Using local counter as fallback\n`);
-            resolve(incrementLocalCounter());
         });
-    });
-}
-
-/**
- * Fetches statistics from current repository
- */
-function fetchCurrentRepoViews(token, repository) {
-    const apiUrl = `https://api.github.com/repos/${repository}/traffic/views`;
-    
-    return new Promise((resolve, reject) => {
-        const options = {
-            headers: {
-                'Authorization': `token ${token}`,
-                'User-Agent': 'CustomBadge',
-                'Accept': 'application/vnd.github.v3+json'
+        
+        if (response.statusCode === 200) {
+            const svgContent = response.data;
+            
+            // Parse number from SVG <text> element (the one with textLength="140.0" for the count)
+            const match = svgContent.match(/<text[^>]*textLength="140\.0"[^>]*>(\d+)<\/text>/);
+            
+            if (match) {
+                const totalViews = parseInt(match[1], 10);
+                console.log(`✅ Views parsed from SVG: ${totalViews}\n`);
+                return totalViews;
+            } else {
+                console.log(`⚠️  Could not parse views from SVG`);
+                return incrementLocalCounter();
             }
-        };
-
-        https.get(apiUrl, options, (res) => {
-            let data = '';
-
-            res.on('data', (chunk) => {
-                data += chunk;
-            });
-
-            res.on('end', () => {
-                if (res.statusCode === 200) {
-                    try {
-                        const json = JSON.parse(data);
-                        const totalViews = json.count || 0;
-                        
-                        console.log(`✅ Repository ${repository} statistics:`);
-                        console.log(`   - Total visits: ${totalViews}\n`);
-                        
-                        resolve(totalViews > 0 ? totalViews : incrementLocalCounter());
-                    } catch (error) {
-                        reject(error);
-                    }
-                } else {
-                    reject(new Error(`Status: ${res.statusCode}`));
-                }
-            });
-        }).on('error', reject);
-    });
+        } else {
+            console.log(`⚠️  Badge fetch returned code: ${response.statusCode}`);
+            console.log(`📊 Using local counter as fallback\n`);
+            return incrementLocalCounter();
+        }
+    } catch (error) {
+        console.log(`❌ SVG fetch error: ${error.message}`);
+        console.log(`📊 Using local counter as fallback\n`);
+        return incrementLocalCounter();
+    }
 }
+
 
 /**
  * Increment local counter (fallback)
