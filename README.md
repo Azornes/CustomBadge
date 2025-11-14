@@ -2,208 +2,208 @@
 
 ![Profile Views Badge](badge.svg)
 
-Automatycznie generowany, pionowy badge pokazujący liczbę odwiedzin profilu GitHub, przechowywany w prywatnym Gist.
+Automatically generated vertical badge showing the number of GitHub profile visits, stored in a private Gist.
 
-## 🎯 Funkcje
+## 🎯 Features
 
-- ✨ Unikalny, pionowy design badge
-- 🔄 Automatyczna aktualizacja co godzinę przez GitHub Actions
-- 🎨 Ikona GitHub na górze, cyfry odwiedzin poniżej
-- 📊 Śledzenie odwiedzin profilu GitHub
-- 🔐 Dane przechowywane w prywatnym Gist (nie zaśmiecają repozytorium)
+- ✨ Unique vertical badge design
+- 🔄 Automatic update every hour via GitHub Actions
+- 🎨 GitHub icon at the top, visit digits below
+- 📊 Tracking GitHub profile visits
+- 🔐 Data stored in private Gist (doesn't clutter the repository)
 
-## 🚀 Instalacja
+## 🚀 Installation
 
-### Krok 1: Fork tego repozytorium
+### Step 1: Fork this repository
 
-Kliknij przycisk "Fork" w prawym górnym rogu tej strony.
+Click the "Fork" button in the top right corner of this page.
 
-### Krok 2: Włącz GitHub Actions
+### Step 2: Enable GitHub Actions
 
-1. Przejdź do zakładki **Actions** w swoim forku
-2. Kliknij "I understand my workflows, go ahead and enable them"
+1. Go to the **Actions** tab in your fork
+2. Click "I understand my workflows, go ahead and enable them"
 
-### Krok 3: Dodaj Personal Access Token
+### Step 3: Add Personal Access Token
 
-1. Przejdź do [GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens)
-2. Kliknij "Generate new token (classic)"
-3. Nadaj nazwę: `PROFILE_VIEWS_TOKEN`
-4. Wybierz uprawnienia:
-   - `repo` (pełen dostęp do repozytoriów)
-   - `gist` (dostęp do zarządzania gistami)
-5. Kliknij "Generate token" i skopiuj token
-6. W swoim forku przejdź do **Settings > Secrets and variables > Actions**
-7. Kliknij "New repository secret"
-8. Nazwa: `GH_TOKEN`
-9. Wartość: wklej skopiowany token
-10. Kliknij "Add secret"
+1. Go to [GitHub Settings > Developer settings > Personal access tokens > Tokens (classic)](https://github.com/settings/tokens)
+2. Click "Generate new token (classic)"
+3. Name it: `PROFILE_VIEWS_TOKEN`
+4. Select permissions:
+   - `repo` (full access to repositories)
+   - `gist` (access to manage gists)
+5. Click "Generate token" and copy the token
+6. In your fork, go to **Settings > Secrets and variables > Actions**
+7. Click "New repository secret"
+8. Name: `GH_TOKEN`
+9. Value: paste the copied token
+10. Click "Add secret"
 
-### Krok 4: Uruchom workflow ręcznie (pierwszy raz)
+### Step 4: Run workflow manually (first time)
 
-1. Przejdź do zakładki **Actions**
-2. Wybierz workflow "Update Profile Views Badge"
-3. Kliknij "Run workflow" > "Run workflow"
-4. Poczekaj na zakończenie workflow
-5. Sprawdź logi - znajdziesz tam informację o utworzeniu Gist i jego ID
+1. Go to the **Actions** tab
+2. Select the "Update Profile Views Badge" workflow
+3. Click "Run workflow" > "Run workflow"
+4. Wait for the workflow to complete
+5. Check the logs - you'll find information about the created Gist and its ID
 
-### Krok 5: Dodaj GIST_ID do secrets
+### Step 5: Add GIST_ID to secrets
 
-Po pierwszym uruchomieniu workflow sprawdź logi w Actions. Znajdziesz tam komunikat:
+After the first workflow run, check the logs in Actions. You'll find the message:
 
 ```
-🔑 WAŻNE! Zapisz to GIST_ID jako secret w GitHub Actions:
+🔑 IMPORTANT! Save this GIST_ID as a secret in GitHub Actions:
    GIST_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-1. Skopiuj ID Gist z logów
-2. Przejdź do **Settings > Secrets and variables > Actions**
-3. Kliknij "New repository secret"
-4. Nazwa: `GIST_ID`
-5. Wartość: wklej skopiowane ID
-6. Kliknij "Add secret"
+1. Copy the Gist ID from the logs
+2. Go to **Settings > Secrets and variables > Actions**
+3. Click "New repository secret"
+4. Name: `GIST_ID`
+5. Value: paste the copied ID
+6. Click "Add secret"
 
-### Krok 6: Znajdź URL do badge w Gist
+### Step 6: Find the badge URL in Gist
 
-Po dodaniu `GIST_ID`, uruchom workflow ponownie. W logach znajdziesz:
+After adding `GIST_ID`, run the workflow again. In the logs, you'll find:
 
 ```
 🔗 Badge URL: https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg
 ```
 
-### Krok 7: Dodaj badge do swojego profilu
+### Step 7: Add badge to your profile
 
-Dodaj następujący kod do README.md w swoim repozytorium profilu (username/username):
+Add the following code to README.md in your profile repository (username/username):
 
 ```markdown
-![Profile Views](https://gist.githubusercontent.com/TWOJA_NAZWA_UŻYTKOWNIKA/GIST_ID/raw/badge.svg)
+![Profile Views](https://gist.githubusercontent.com/YOUR_USERNAME/GIST_ID/raw/badge.svg)
 ```
 
-Zamień:
-- `TWOJA_NAZWA_UŻYTKOWNIKA` na swoją nazwę użytkownika GitHub
-- `GIST_ID` na ID twojego Gist (znajdziesz w logach workflow)
+Replace:
+- `YOUR_USERNAME` with your GitHub username
+- `GIST_ID` with your Gist ID (found in workflow logs)
 
-## 📁 Struktura projektu
+## 📁 Project Structure
 
 ```
 CustomBadge/
 ├── .github/
 │   └── workflows/
 │       └── update-badge.yml    # GitHub Actions workflow
-├── generate-badge.js            # Skrypt generujący SVG badge
-├── package.json                 # Zależności Node.js
-├── badge.svg                    # Wygenerowany badge (auto-update)
-├── views-count.json             # Liczba odwiedzin (auto-update)
-└── README.md                    # Ten plik
+├── generate-badge.js            # Script generating SVG badge
+├── package.json                 # Node.js dependencies
+├── badge.svg                    # Generated badge (auto-update)
+├── views-count.json             # Visit count (auto-update)
+└── README.md                    # This file
 ```
 
-## 🎨 Wygląd Badge
+## 🎨 Badge Appearance
 
-Badge jest pionowy i składa się z:
-- Szarej sekcji z ikoną GitHub na górze
-- Niebieskich sekcji z pojedynczymi cyframi reprezentującymi liczbę odwiedzin
+The badge is vertical and consists of:
+- Gray section with GitHub icon at the top
+- Blue sections with individual digits representing the visit count
 
-## ⚙️ Jak to działa
+## ⚙️ How It Works
 
-1. **GitHub Actions** uruchamia się co godzinę (lub ręcznie)
-2. **Skrypt Node.js** pobiera statystyki odwiedzin:
-   - Najpierw próbuje pobrać dane z repozytorium profilu (`username/username`)
-   - Jeśli nie istnieje, używa statystyk z repozytorium CustomBadge
-   - Wykorzystuje GitHub Traffic API do pobierania rzeczywistych danych
-   - W przypadku błędu używa lokalnego licznika jako fallback
-3. **Generuje SVG** - tworzy pionowy badge z ikoną GitHub i cyframi
-4. **Zapisuje do Gist** - aktualizuje prywatny Gist z plikami `badge.svg` i `views-count.json`
-5. **Auto-update** - badge w README automatycznie się aktualizuje z Gist
+1. **GitHub Actions** runs every hour (or manually)
+2. **Node.js script** fetches visit statistics:
+   - First tries to fetch from profile repository (`username/username`)
+   - If not exists, uses statistics from CustomBadge repository
+   - Uses GitHub Traffic API to fetch real data
+   - In case of error, uses local counter as fallback
+3. **Generates SVG** - creates vertical badge with GitHub icon and digits
+4. **Saves to Gist** - updates private Gist with `badge.svg` and `views-count.json` files
+5. **Auto-update** - badge in README automatically updates from Gist
 
-### Źródło danych
+### Data Source
 
-Badge wykorzystuje **GitHub Traffic API**, które dostarcza:
-- **Całkowitą liczbę odwiedzin** (count) - wyświetlana na badge
-- **Unikalne odwiedziny** (uniques) - logowane w konsoli
-- **Dane z ostatnich 14 dni** - ograniczenie API GitHub
+The badge uses **GitHub Traffic API**, which provides:
+- **Total visits** (count) - displayed on the badge
+- **Unique visits** (uniques) - logged in console
+- **Data from last 14 days** - GitHub API limitation
 
-⚠️ **Uwaga**: GitHub Traffic API pokazuje tylko odwiedziny z ostatnich 14 dni. Dla długoterminowego śledzenia, dane są zapisywane w `views-count.json`.
+⚠️ **Note**: GitHub Traffic API shows only visits from the last 14 days. For long-term tracking, data is saved in `views-count.json`.
 
-## 🔧 Konfiguracja
+## 🔧 Configuration
 
-### Częstotliwość aktualizacji
+### Update Frequency
 
-Edytuj plik `.github/workflows/update-badge.yml`:
+Edit the `.github/workflows/update-badge.yml` file:
 
 ```yaml
 schedule:
-  - cron: '0 * * * *'  # Co godzinę (domyślnie)
-  # - cron: '0 */6 * * *'  # Co 6 godzin
-  # - cron: '0 0 * * *'  # Raz dziennie
+  - cron: '0 * * * *'  # Every hour (default)
+  # - cron: '0 */6 * * *'  # Every 6 hours
+  # - cron: '0 0 * * *'  # Once a day
 ```
 
-### Zmiana kolorów badge
+### Change Badge Colors
 
-W pliku `generate-badge.js` możesz dostosować kolory:
+In the `generate-badge.js` file, you can customize colors:
 
 ```javascript
-const HEADER_BG = '#1f2937';  // Kolor tła nagłówka (ikona GitHub)
-const DIGIT_BG = '#3b82f6';   // Kolor tła cyfr
-const TEXT_COLOR = '#ffffff'; // Kolor tekstu
+const HEADER_BG = '#1f2937';  // Header background color (GitHub icon)
+const DIGIT_BG = '#3b82f6';   // Digit background color
+const TEXT_COLOR = '#ffffff'; // Text color
 ```
 
-### Śledzenie różnych repozytoriów
+### Track Different Repositories
 
-Domyślnie skrypt próbuje pobrać statystyki z:
-1. Repozytorium profilu: `username/username`
-2. Bieżącego repozytorium: `username/CustomBadge`
+By default, the script tries to fetch statistics from:
+1. Profile repository: `username/username`
+2. Current repository: `username/CustomBadge`
 
-Możesz zmodyfikować logikę w funkcji [`fetchProfileViews()`](generate-badge.js:51) w pliku `generate-badge.js`.
+You can modify the logic in the [`fetchProfileViews()`](generate-badge.js:51) function in the `generate-badge.js` file.
 
-## 🐛 Rozwiązywanie problemów
+## 🐛 Troubleshooting
 
-### Badge nie aktualizuje się
+### Badge Not Updating
 
-1. Sprawdź czy workflow się wykonał: **Actions** → "Update Profile Views Badge"
-2. Sprawdź logi workflow - czy utworzył/zaktualizował Gist
-3. Sprawdź czy `GH_TOKEN` jest poprawnie ustawiony w Secrets
-4. Sprawdź czy `GIST_ID` jest ustawiony (po pierwszym uruchomieniu)
-5. Upewnij się że token ma uprawnienia `repo` i `gist`
+1. Check if the workflow executed: **Actions** → "Update Profile Views Badge"
+2. Check workflow logs - did it create/update the Gist
+3. Check if `GH_TOKEN` is correctly set in Secrets
+4. Check if `GIST_ID` is set (after first run)
+5. Ensure the token has `repo` and `gist` permissions
 
-### "Bad credentials" lub błąd 401
+### "Bad credentials" or 401 error
 
-Token wygasł lub nie ma odpowiednich uprawnień. Wygeneruj nowy token z uprawnieniami:
+Token expired or lacks permissions. Generate a new token with permissions:
 - ✅ `repo` (Full control of private repositories)
 - ✅ `gist` (Create and update gists)
 
-### Nie widzę GIST_ID w logach
+### No GIST_ID in logs
 
-Sprawdź czy:
-1. Token ma uprawnienia `gist`
-2. Workflow wykonał się pomyślnie
-3. W logach jest komunikat "Tworzę nowy prywatny Gist..."
+Check if:
+1. Token has `gist` permissions
+2. Workflow executed successfully
+3. Logs contain "Creating new private Gist..."
 
-### Badge nie wyświetla się w README
+### Badge Not Displaying in README
 
-1. Sprawdź czy URL jest poprawny (skopiowany z logów workflow)
-2. URL powinien być w formacie: `https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg`
-3. Gist musi być utworzony (sprawdź na https://gist.github.com/)
+1. Check if the URL is correct (copied from workflow logs)
+2. URL should be in format: `https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg`
+3. Gist must be created (check at https://gist.github.com/)
 
-### Badge pokazuje 0 odwiedzin
+### Badge Shows 0 Visits
 
-GitHub Traffic API zwraca dane tylko z ostatnich 14 dni. Jeśli repozytorium jest nowe, liczba może być niska lub zerowa. Skrypt wtedy użyje lokalnego licznika.
+GitHub Traffic API returns data only from the last 14 days. If the repository is new, the number may be low or zero. The script then uses the local counter.
 
-### Workflow nie uruchamia się automatycznie
+### Workflow Not Running Automatically
 
-GitHub Actions może dezaktywować crony w nieaktywnych repozytoriach. Uruchom workflow ręcznie raz na jakiś czas lub dodaj commit.
+GitHub Actions may disable crons in inactive repositories. Run the workflow manually occasionally or add a commit.
 
-## 📝 Licencja
+## 📝 License
 
-MIT License - możesz swobodnie używać i modyfikować ten projekt!
+MIT License - you can freely use and modify this project!
 
-## 🤝 Współpraca
+## 🤝 Contributing
 
-Issue i Pull Requesty są mile widziane!
+Issues and Pull Requests are welcome!
 
 ---
 
-## 📸 Przykład użycia
+## 📸 Usage Example
 
-Dodaj badge do swojego profilu (w repozytorium `username/username`):
+Add the badge to your profile (in `username/username` repository):
 
 ```markdown
 ## 📊 Profile Stats
@@ -211,13 +211,13 @@ Dodaj badge do swojego profilu (w repozytorium `username/username`):
 ![Profile Views](https://gist.githubusercontent.com/USERNAME/GIST_ID/raw/badge.svg)
 ```
 
-## 🔍 Dlaczego Gist?
+## 🔍 Why Gist?
 
-- **Brak zaśmiecania repozytorium** - nie ma ciągłych commitów co godzinę
-- **Prywatność** - Gist jest prywatny, tylko badge.svg jest publiczny przez raw URL
-- **Łatwiejsze zarządzanie** - wszystkie dane w jednym miejscu
-- **Szybsze aktualizacje** - brak potrzeby push do repozytorium
+- **No repository clutter** - no constant commits every hour
+- **Privacy** - Gist is private, only badge.svg is public via raw URL
+- **Easier management** - all data in one place
+- **Faster updates** - no need to push to repository
 
 ---
 
-⭐ Jeśli ten projekt Ci się podoba, zostaw gwiazdkę!
+⭐ If you like this project, leave a star!

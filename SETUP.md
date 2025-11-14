@@ -1,108 +1,108 @@
-# 🚀 Szybki Start - GitHub Gist Badge
+# 🚀 Quick Start - GitHub Gist Badge
 
-## Krok po kroku - Konfiguracja
+## Step by Step - Configuration
 
-### 1️⃣ Wygeneruj Personal Access Token
+### 1️⃣ Generate Personal Access Token
 
-1. Przejdź do https://github.com/settings/tokens
-2. Kliknij **"Generate new token (classic)"**
-3. Nazwa: `PROFILE_VIEWS_BADGE`
-4. Wybierz uprawnienia:
-   - ✅ `repo` - pełen dostęp do repozytoriów
-   - ✅ `gist` - tworzenie i zarządzanie gistami
-5. Kliknij **"Generate token"** i **SKOPIUJ TOKEN** (nie będziesz mógł go zobaczyć ponownie!)
+1. Go to https://github.com/settings/tokens
+2. Click **"Generate new token (classic)"**
+3. Name: `PROFILE_VIEWS_BADGE`
+4. Select permissions:
+   - ✅ `repo` - full access to repositories
+   - ✅ `gist` - create and manage gists
+5. Click **"Generate token"** and **COPY THE TOKEN** (you won't be able to see it again!)
 
-### 2️⃣ Dodaj token do GitHub Secrets
+### 2️⃣ Add token to GitHub Secrets
 
-1. W tym repozytorium przejdź do **Settings** → **Secrets and variables** → **Actions**
-2. Kliknij **"New repository secret"**
-3. Nazwa: `GH_TOKEN`
-4. Wartość: wklej skopiowany token
-5. Kliknij **"Add secret"**
+1. In this repository go to **Settings** → **Secrets and variables** → **Actions**
+2. Click **"New repository secret"**
+3. Name: `GH_TOKEN`
+4. Value: paste the copied token
+5. Click **"Add secret"**
 
-### 3️⃣ Pierwsze uruchomienie workflow
+### 3️⃣ First workflow run
 
-1. Przejdź do zakładki **Actions**
-2. Wybierz workflow **"Update Profile Views Badge"**
-3. Kliknij **"Run workflow"** → **"Run workflow"**
-4. Poczekaj na zakończenie (ok. 10-30 sekund)
+1. Go to the **Actions** tab
+2. Select the **"Update Profile Views Badge"** workflow
+3. Click **"Run workflow"** → **"Run workflow"**
+4. Wait for completion (about 10-30 seconds)
 
-### 4️⃣ Znajdź GIST_ID w logach
+### 4️⃣ Find GIST_ID in logs
 
-1. Kliknij na zakończony workflow
-2. Kliknij na job **"update-badge"**
-3. Rozwiń sekcję **"Generate and upload badge to Gist"**
-4. Znajdź linię:
+1. Click on the completed workflow
+2. Click on the **"update-badge"** job
+3. Expand the **"Generate and upload badge to Gist"** section
+4. Find the line:
    ```
-   🔑 WAŻNE! Zapisz to GIST_ID jako secret w GitHub Actions:
+   🔑 IMPORTANT! Save this GIST_ID as a secret in GitHub Actions:
       GIST_ID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
    ```
-5. **SKOPIUJ ten GIST_ID**
+5. **COPY this GIST_ID**
 
-### 5️⃣ Dodaj GIST_ID do Secrets
+### 5️⃣ Add GIST_ID to Secrets
 
-1. Wróć do **Settings** → **Secrets and variables** → **Actions**
-2. Kliknij **"New repository secret"**
-3. Nazwa: `GIST_ID`
-4. Wartość: wklej skopiowane GIST_ID
-5. Kliknij **"Add secret"**
+1. Go back to **Settings** → **Secrets and variables** → **Actions**
+2. Click **"New repository secret"**
+3. Name: `GIST_ID`
+4. Value: paste the copied GIST_ID
+5. Click **"Add secret"**
 
-### 6️⃣ Uruchom workflow ponownie
+### 6️⃣ Run workflow again
 
-1. Przejdź znów do **Actions** → **"Update Profile Views Badge"**
-2. Kliknij **"Run workflow"** → **"Run workflow"**
-3. Po zakończeniu sprawdź logi, znajdziesz tam:
+1. Go again to **Actions** → **"Update Profile Views Badge"**
+2. Click **"Run workflow"** → **"Run workflow"**
+3. After completion, check the logs, you'll find:
    ```
-   🔗 Badge URL: https://gist.githubusercontent.com/TWOJA_NAZWA/GIST_ID/raw/badge.svg
+   🔗 Badge URL: https://gist.githubusercontent.com/YOUR_USERNAME/GIST_ID/raw/badge.svg
    ```
-4. **SKOPIUJ ten URL**
+4. **COPY this URL**
 
-### 7️⃣ Dodaj badge do swojego profilu
+### 7️⃣ Add badge to your profile
 
-1. Przejdź do swojego repozytorium profilu (`username/username`)
-2. Edytuj `README.md`
-3. Dodaj:
+1. Go to your profile repository (`username/username`)
+2. Edit `README.md`
+3. Add:
    ```markdown
-   ![Profile Views](https://gist.githubusercontent.com/TWOJA_NAZWA/GIST_ID/raw/badge.svg)
+   ![Profile Views](https://gist.githubusercontent.com/YOUR_USERNAME/GIST_ID/raw/badge.svg)
    ```
-4. Commit i gotowe! 🎉
+4. Commit and done! 🎉
 
-## ✅ Sprawdzenie
+## ✅ Verification
 
-- [ ] Token `GH_TOKEN` dodany do Secrets
-- [ ] Workflow uruchomiony po raz pierwszy
-- [ ] `GIST_ID` skopiowany z logów
-- [ ] `GIST_ID` dodany do Secrets
-- [ ] Workflow uruchomiony po raz drugi
-- [ ] Badge URL skopiowany z logów
-- [ ] Badge dodany do README profilu
-- [ ] Badge wyświetla się poprawnie
+- [ ] Token `GH_TOKEN` added to Secrets
+- [ ] Workflow run for the first time
+- [ ] `GIST_ID` copied from logs
+- [ ] `GIST_ID` added to Secrets
+- [ ] Workflow run for the second time
+- [ ] Badge URL copied from logs
+- [ ] Badge added to profile README
+- [ ] Badge displays correctly
 
-## 🔧 Rozwiązywanie problemów
+## 🔧 Troubleshooting
 
-### ❌ "Bad credentials" w logach
-- Sprawdź czy token ma uprawnienia `repo` i `gist`
-- Wygeneruj nowy token jeśli wygasł
+### ❌ "Bad credentials" in logs
+- Check if the token has `repo` and `gist` permissions
+- Generate a new token if it expired
 
-### ❌ Nie widzę GIST_ID w logach
-- Sprawdź czy `GH_TOKEN` jest poprawnie ustawiony
-- Sprawdź czy workflow zakończył się sukcesem (zielony checkmark)
+### ❌ No GIST_ID in logs
+- Check if `GH_TOKEN` is correctly set
+- Check if the workflow completed successfully (green checkmark)
 
-### ❌ Badge nie wyświetla się
-- Sprawdź czy URL jest poprawny
-- Sprawdź czy Gist został utworzony na https://gist.github.com/
+### ❌ Badge not displaying
+- Check if the URL is correct
+- Check if the Gist was created at https://gist.github.com/
 
-## 📝 Uwagi
+## 📝 Notes
 
-- Badge będzie aktualizowany automatycznie co godzinę
-- Gist jest prywatny, ale badge.svg jest dostępny przez raw URL
-- Nie musisz więcej nic robić - wszystko działa automatycznie!
-- Możesz usunąć pliki `badge.svg` i `views-count.json` z lokalnego repozytorium (są w `.gitignore`)
+- The badge will be updated automatically every hour
+- The Gist is private, but badge.svg is accessible via raw URL
+- You don't need to do anything else - everything works automatically!
+- You can delete `badge.svg` and `views-count.json` files from the local repository (they are in `.gitignore`)
 
-## 🎯 Co dalej?
+## 🎯 What's next?
 
-Po konfiguracji:
-- Workflow będzie uruchamiał się automatycznie co godzinę
-- Badge będzie aktualizował się w Twoim profilu
-- Wszystkie dane są bezpiecznie w prywatnym Gist
-- Nie ma więcej commitów w tym repozytorium (czysto!)
+After configuration:
+- Workflow will run automatically every hour
+- Badge will update in your profile
+- All data is safely in the private Gist
+- No more commits in this repository (clean!)

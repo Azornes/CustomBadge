@@ -1,7 +1,7 @@
 {
   "name": "custom-github-badge",
   "version": "1.0.0",
-  "description": "Automatycznie generowany custom badge z liczbą odwiedzin profilu GitHub",
+  "description": "Automatically generated custom badge with GitHub profile views count",
   "main": "generate-badge.js",
   "scripts": {
     "generate": "node generate-badge.js"

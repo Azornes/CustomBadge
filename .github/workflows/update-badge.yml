@@ -1,14 +1,14 @@
 name: Update Profile Views Badge
 
 on:
-  # Uruchamiaj co godzinę
+  # Run every hour
   schedule:
     - cron: '0 * * * *'
   
-  # Pozwól na ręczne uruchomienie
+  # Allow manual trigger
   workflow_dispatch:
   
-  # Uruchamiaj przy push do main (dla testów)
+  # Run on push to main (for testing)
   push:
     branches:
       - main
@@ -32,12 +32,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIST_ID: ${{ secrets.GIST_ID }}
         run: |
-          echo "🚀 Generowanie badge i aktualizacja Gist..."
+          echo "🚀 Generating badge and updating Gist..."
           node generate-badge.js
           
           if [ $? -eq 0 ]; then
-            echo "✅ Badge zaktualizowany w Gist!"
+            echo "✅ Badge updated in Gist!"
           else
-            echo "❌ Wystąpił błąd podczas aktualizacji"
+            echo "❌ Error occurred during update"
             exit 1
           fi
