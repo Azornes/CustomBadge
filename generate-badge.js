@@ -157,20 +157,18 @@ async function updateGist(token, gistId, badgeContent, viewsContent) {
         }
     };
     
-    // Debug logging
+    // Debug logging (masked for security)
     console.log(`🔍 Debug info:`);
     console.log(`   - Method: ${method}`);
-    console.log(`   - URL: ${url}`);
+    console.log(`   - URL: ${url.replace(/\/gists\/[^\/]+/, '/gists/***')}`);
     console.log(`   - Token present: ${token ? 'Yes' : 'No'}`);
-    console.log(`   - Token length: ${token ? token.length : 0}`);
-    console.log(`   - Payload: ${JSON.stringify(gistData, null, 2)}\n`);
+    console.log(`   - Files: ${Object.keys(files).join(', ')}\n`);
     
     try {
         const response = await httpsRequest(url, options, JSON.stringify(gistData));
         
         console.log(`📡 Response:`);
-        console.log(`   - Status: ${response.statusCode}`);
-        console.log(`   - Body: ${response.data}\n`);
+        console.log(`   - Status: ${response.statusCode}\n`);
         
         if (response.statusCode === 200 || response.statusCode === 201) {
             const result = JSON.parse(response.data);
@@ -181,13 +179,16 @@ async function updateGist(token, gistId, badgeContent, viewsContent) {
                 console.log(`   GIST_ID=${result.id}\n`);
             }
             
-            console.log(`📋 Gist URL: ${result.html_url}`);
-            console.log(`🔗 Badge URL: ${result.files[BADGE_FILE].raw_url}\n`);
+            // Mask sensitive URLs in logs
+            const maskedGistUrl = result.html_url.replace(/\/[a-f0-9]{32,}$/, '/***');
+            const maskedBadgeUrl = result.files[BADGE_FILE].raw_url.replace(/\/[a-f0-9]{32,}$/, '/***');
+            console.log(`📋 Gist URL: ${maskedGistUrl}`);
+            console.log(`🔗 Badge URL: ${maskedBadgeUrl}\n`);
             
             return result;
         } else {
             console.error(`❌ ${method} error: ${response.statusCode}`);
-            console.error(response.data);
+            console.error(`   Response summary: ${response.data.substring(0, 200)}...`); // Truncate body
             return null;
         }
     } catch (error) {
