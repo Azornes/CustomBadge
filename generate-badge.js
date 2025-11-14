@@ -1,6 +1,6 @@
 const fs = require('fs');
 const https = require('https');
-const { generateBadgeSVG } = require('./badge-core');
+const { generateBadgeSVG } = require('./docs/badge-core');
 
 // Configuration
 const VIEWS_FILE = 'views-count.json';
@@ -305,6 +305,17 @@ async function main() {
             console.log(`🖼️  Preview mode: Using ${previewViews} views\n`);
         }
         
+        // Check for style preference
+        let badgeStyle = 'animated'; // default
+        const styleArg = process.argv.find(arg => arg.startsWith('--style='));
+        if (styleArg) {
+            badgeStyle = styleArg.split('=')[1];
+        } else if (process.env.BADGE_STYLE) {
+            badgeStyle = process.env.BADGE_STYLE;
+        }
+        
+        console.log(`🎨 Badge style: ${badgeStyle}\n`);
+        
         const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
         
         // Token required only if not pure preview (i.e., if fetching views or updating Gist)
@@ -357,8 +368,8 @@ async function main() {
             views = await fetchProfileViews();
         }
         
-        // Generate SVG badge
-        const badgeSVG = generateBadgeSVG(views);
+        // Generate SVG badge with selected style
+        const badgeSVG = generateBadgeSVG(views, badgeStyle);
         
         // Prepare data to save
         const viewsData = {

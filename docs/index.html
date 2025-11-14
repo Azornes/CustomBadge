@@ -173,6 +173,21 @@
                 <label for="username">Nazwa użytkownika GitHub:</label>
                 <input type="text" id="username" placeholder="np. Azornes" value="Azornes">
             </div>
+            
+            <div class="input-group">
+                <label>Styl badge:</label>
+                <div style="display: flex; gap: 20px; margin-top: 10px;">
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="radio" name="style" value="animated" checked style="width: auto; margin-right: 8px;">
+                        <span>🎬 Animated (animowany z gradientami)</span>
+                    </label>
+                    <label style="display: flex; align-items: center; cursor: pointer;">
+                        <input type="radio" name="style" value="classic" style="width: auto; margin-right: 8px;">
+                        <span>📊 Classic (prosty, czysty)</span>
+                    </label>
+                </div>
+            </div>
+            
             <button class="btn" onclick="generateDemo()">Generuj Badge</button>
             
             <div id="badge-preview" class="demo-badge"></div>
@@ -222,6 +237,16 @@
             const preview = document.getElementById('badge-preview');
             const message = document.getElementById('message');
             const badgeUrl = document.getElementById('badge-url');
+            const styleRadios = document.getElementsByName('style');
+            let selectedStyle = 'animated';
+            
+            // Get selected style
+            for (const radio of styleRadios) {
+                if (radio.checked) {
+                    selectedStyle = radio.value;
+                    break;
+                }
+            }
 
             if (!username) {
                 message.innerHTML = '<div class="error">Podaj nazwę użytkownika!</div>';
@@ -233,14 +258,14 @@
             badgeUrl.innerHTML = url;
 
             // Show loading
-            message.innerHTML = '<div class="loading">Generowanie badge...</div>';
+            message.innerHTML = `<div class="loading">Generowanie badge (${selectedStyle})...</div>`;
             preview.innerHTML = '';
 
-            // Generate badge
-            generateBadgeForUser(username)
+            // Generate badge with selected style
+            generateBadgeForUser(username, selectedStyle)
                 .then(svgContent => {
                     preview.innerHTML = svgContent;
-                    message.innerHTML = '<div class="success">✓ Badge wygenerowany pomyślnie!</div>';
+                    message.innerHTML = `<div class="success">✓ Badge wygenerowany pomyślnie w stylu ${selectedStyle}!</div>`;
                 })
                 .catch(error => {
                     message.innerHTML = `<div class="error">Błąd: ${error.message}</div>`;
@@ -251,6 +276,18 @@
         // Auto-generate on page load
         window.addEventListener('load', () => {
             generateDemo();
+        });
+        
+        // Auto-regenerate when style changes
+        document.addEventListener('DOMContentLoaded', () => {
+            const styleRadios = document.getElementsByName('style');
+            styleRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (document.getElementById('username').value.trim()) {
+                        generateDemo();
+                    }
+                });
+            });
         });
     </script>
 </body>

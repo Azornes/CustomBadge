@@ -76,16 +76,17 @@ async function fetchProfileViews(username) {
 /**
  * Generates badge for a specific user
  * @param {string} username - GitHub username
+ * @param {string} style - Badge style: 'classic' or 'animated' (default: 'animated')
  * @returns {Promise<string>} - SVG content
  */
-async function generateBadgeForUser(username) {
+async function generateBadgeForUser(username, style = 'animated') {
     try {
         const views = await fetchProfileViews(username);
-        return BadgeCore.generateBadgeSVG(views);
+        return BadgeCore.generateBadgeSVG(views, style);
     } catch (error) {
         console.error('Error generating badge:', error);
         // Return error badge
-        return BadgeCore.generateBadgeSVG(0);
+        return BadgeCore.generateBadgeSVG(0, style);
     }
 }
 
