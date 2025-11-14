@@ -249,11 +249,14 @@ async function fetchProfileViews() {
         if (response.statusCode === 200) {
             const svgContent = response.data;
             
-            // Parse number from SVG <text> element (the one with textLength="140.0" for the count)
-            const match = svgContent.match(/<text[^>]*textLength="140\.0"[^>]*>(\d+)<\/text>/);
+            // Parse number from SVG - find all <text> elements containing only digits
+            // The visitor count appears after the "visitors" text
+            const textMatches = svgContent.matchAll(/<text[^>]*>(\d+)<\/text>/g);
+            const matches = Array.from(textMatches);
             
-            if (match) {
-                const totalViews = parseInt(match[1], 10);
+            if (matches.length > 0) {
+                // Take the last numeric text element (the actual count, not shadow)
+                const totalViews = parseInt(matches[matches.length - 1][1], 10);
                 console.log(`✅ Views parsed from SVG: ${totalViews}\n`);
                 return totalViews;
             } else {
