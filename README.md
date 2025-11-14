@@ -1,6 +1,8 @@
 # Custom GitHub Profile Views Badge
 
-![Profile Views Badge](badge.svg)
+  <a href="https://github.com/Azornes/CustomBadge">
+    <img src="https://gist.githubusercontent.com/Azornes/a7f50df83b26866359c52e56c9bb4b64/raw/badge.svg" alt="Badge" style="margin-right:10px;">
+  </a>
 
 Automatically generated vertical badge showing the number of GitHub profile visits, stored in a private Gist.
 
