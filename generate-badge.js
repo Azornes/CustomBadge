@@ -117,8 +117,19 @@ async function updateGist(token, gistId, badgeContent, viewsContent) {
     };
     
     let url, method, gistData;
+    let shouldUpdate = false;
     
+    // If GIST_ID is provided, verify that Gist exists
     if (gistId) {
+        const existingGist = await getGist(token, gistId);
+        if (existingGist) {
+            shouldUpdate = true;
+        } else {
+            console.log(`⚠️  Gist ${gistId} not found, creating new one...\n`);
+        }
+    }
+    
+    if (shouldUpdate) {
         // Update existing Gist
         url = `https://api.github.com/gists/${gistId}`;
         method = 'PATCH';
