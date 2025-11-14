@@ -448,6 +448,38 @@ async function main() {
             process.exit(1);
         }
         
+        // Test token by checking user info
+        console.log('🔐 Testing GitHub token...');
+        try {
+            const userResponse = await httpsRequest('https://api.github.com/user', {
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'User-Agent': 'CustomBadge',
+                    'Accept': 'application/vnd.github.v3+json'
+                }
+            });
+            
+            if (userResponse.statusCode === 200) {
+                const userData = JSON.parse(userResponse.data);
+                console.log(`✅ Token is valid for user: ${userData.login}`);
+            } else {
+                console.log(`⚠️  Token test failed with status: ${userResponse.statusCode}`);
+                console.log(`   Response: ${userResponse.data}`);
+            }
+            
+            // Check token scopes
+            const scopeResponse = await httpsRequest('https://api.github.com', {
+                method: 'HEAD',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'User-Agent': 'CustomBadge'
+                }
+            });
+            console.log(`📋 Token scopes check completed\n`);
+        } catch (error) {
+            console.log(`⚠️  Token validation error: ${error.message}\n`);
+        }
+        
         // Fetch number of views
         const views = await fetchProfileViews();
         
