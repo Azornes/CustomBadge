@@ -8,9 +8,11 @@ Automatically generated vertical badge showing the number of GitHub profile visi
 
 - ✨ Unique vertical badge design
 - 🔄 Automatic update every hour via GitHub Actions
-- 🎨 GitHub icon at the top, visit digits below
+- 🎨 **Two badge styles**: Classic (simple) and Animated (advanced with effects)
+- 👁️ GitHub icon at the top, visit digits below
 - 📊 Tracking GitHub profile visits
 - 🔐 Data stored in private Gist (doesn't clutter the repository)
+- ⚙️ Configurable badge style via workflow input or secret
 
 ## 🚀 Installation
 
@@ -138,12 +140,56 @@ The [`generate-badge.js`](generate-badge.js) script includes several key functio
 - `GH_TOKEN` or `GITHUB_TOKEN` - GitHub Personal Access Token (required for Gist operations)
 - `GIST_ID` - ID of the Gist to update (optional, auto-created on first run)
 - `PREVIEW_VIEWS` - Number for preview mode (optional, for testing)
+- `BADGE_STYLE` - Badge style: `classic` or `animated` (default: `animated`)
 
-## 🎨 Badge Appearance
+## 🎨 Badge Styles
 
-The badge is vertical and consists of:
-- Gray section with GitHub icon at the top
-- Blue sections with individual digits representing the visit count
+The badge is available in two styles:
+
+### Animated Style (Default)
+- Advanced animations with gradients and glow effects
+- Floating particles and morphing shapes
+- Eye-blinking animation
+- Gradient color shifts (pink/purple theme)
+- Dynamic pulse effects on digits
+
+### Classic Style
+- Simple, clean design with solid colors
+- Gray header (`#1f2937`) with GitHub icon
+- Blue digits (`#3b82f6`) on solid background
+- No animations, lightweight SVG
+
+### Choosing a Style
+
+**Option 1: Manual Workflow Run**
+1. Go to **Actions** → "Update Profile Views Badge"
+2. Click **Run workflow**
+3. Select your preferred style from the dropdown menu
+4. Click **Run workflow**
+
+**Option 2: Set Default Style (via Secret)**
+1. Go to **Settings** → **Secrets and variables** → **Actions**
+2. Click **New repository secret**
+3. Name: `BADGE_STYLE`
+4. Value: `classic` or `animated`
+5. Click **Add secret**
+
+**Option 3: Command Line (for local testing)**
+```bash
+# Classic style
+BADGE_STYLE=classic node generate-badge.js
+
+# Animated style
+BADGE_STYLE=animated node generate-badge.js
+
+# Or using command line argument
+node generate-badge.js --style=classic
+```
+
+The style selection priority:
+1. Manual workflow input (when running manually)
+2. `BADGE_STYLE` secret (for automatic runs)
+3. Default: `animated`
 
 ## ⚙️ How It Works
 
@@ -179,15 +225,17 @@ schedule:
   # - cron: '0 0 * * *'  # Once a day
 ```
 
-### Change Badge Colors
+### Change Badge Colors (Classic Style Only)
 
-In the [`generate-badge.js`](generate-badge.js:9) file, you can customize colors:
+The classic style uses solid colors defined in [`badge-core.js`](docs/badge-core.js):
 
 ```javascript
-const HEADER_BG = '#1f2937';  // Header background color (GitHub icon)
-const DIGIT_BG = '#3b82f6';   // Digit background color
-const TEXT_COLOR = '#ffffff'; // Text color
+const CLASSIC_HEADER_BG = '#1f2937';  // gray-800 - Header background
+const CLASSIC_DIGIT_BG = '#3b82f6';   // blue-500 - Digit background
+const CLASSIC_TEXT_COLOR = '#ffffff'; // white - Text color
 ```
+
+The animated style uses dynamic gradients and cannot be easily customized without modifying the animation keyframes.
 
 ### Preview Mode
 

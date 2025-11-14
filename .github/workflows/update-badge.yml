@@ -7,6 +7,15 @@ on:
   
   # Allow manual trigger
   workflow_dispatch:
+    inputs:
+      badge_style:
+        description: "Styl badge'a (classic lub animated)"
+        required: false
+        default: 'animated'
+        type: choice
+        options:
+          - animated
+          - classic
   
   # Run on push to main (for testing)
   push:
@@ -31,8 +40,10 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GIST_ID: ${{ secrets.GIST_ID }}
+          BADGE_STYLE: ${{ github.event.inputs.badge_style || secrets.BADGE_STYLE || 'animated' }}
         run: |
           echo "🚀 Generating badge and updating Gist..."
+          echo "🎨 Badge style: ${BADGE_STYLE}"
           node generate-badge.js
           
           if [ $? -eq 0 ]; then
