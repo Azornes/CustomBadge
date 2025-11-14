@@ -157,14 +157,26 @@ async function updateGist(token, gistId, badgeContent, viewsContent) {
         }
     };
     
+    // Debug logging
+    console.log(`🔍 Debug info:`);
+    console.log(`   - Method: ${method}`);
+    console.log(`   - URL: ${url}`);
+    console.log(`   - Token present: ${token ? 'Yes' : 'No'}`);
+    console.log(`   - Token length: ${token ? token.length : 0}`);
+    console.log(`   - Payload: ${JSON.stringify(gistData, null, 2)}\n`);
+    
     try {
         const response = await httpsRequest(url, options, JSON.stringify(gistData));
         
+        console.log(`📡 Response:`);
+        console.log(`   - Status: ${response.statusCode}`);
+        console.log(`   - Body: ${response.data}\n`);
+        
         if (response.statusCode === 200 || response.statusCode === 201) {
             const result = JSON.parse(response.data);
-            console.log(`✅ Gist ${gistId ? 'updated' : 'created'} successfully!`);
+            console.log(`✅ Gist ${shouldUpdate ? 'updated' : 'created'} successfully!`);
             
-            if (!gistId) {
+            if (!shouldUpdate) {
                 console.log(`\n🔑 IMPORTANT! Save this GIST_ID as a secret in GitHub Actions:`);
                 console.log(`   GIST_ID=${result.id}\n`);
             }
@@ -179,7 +191,8 @@ async function updateGist(token, gistId, badgeContent, viewsContent) {
             return null;
         }
     } catch (error) {
-        console.error(`❌ Error during ${gistId ? 'updating' : 'creating'} Gist:`, error.message);
+        console.error(`❌ Error during ${shouldUpdate ? 'updating' : 'creating'} Gist:`, error.message);
+        console.error(`   Stack: ${error.stack}`);
         return null;
     }
 }
