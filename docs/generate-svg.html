@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script type="text/javascript">
+        // Redirect to badge.html with username parameter
+        const path = window.location.pathname;
+        const match = path.match(/\/([^\/]+)\.svg$/);
+        if (match && match[1]) {
+            const username = match[1];
+            window.location.href = `/CustomBadge/badge.html?user=${username}`;
+        } else {
+            window.location.href = '/CustomBadge/';
+        }
+    </script>
+</head>
+<body></body>
+</html>

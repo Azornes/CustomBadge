@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Badge Service</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .demo-section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .demo-badge {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .url-box {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            margin-top: 15px;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+
+        .code-block pre {
+            margin: 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .feature-list {
+            list-style: none;
+            margin-top: 20px;
+        }
+
+        .feature-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .loading {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
+
+        .error {
+            color: #e74c3c;
+            padding: 10px;
+            background: #ffe0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: #27ae60;
+            padding: 10px;
+            background: #d4edda;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Custom Badge Service</h1>
+        <p class="subtitle">Generuj piękne, pionowe badge'e z liczbą odwiedzin profilu GitHub</p>
+
+        <div class="demo-section">
+            <h2>🎨 Demo</h2>
+            <div class="input-group">
+                <label for="username">Nazwa użytkownika GitHub:</label>
+                <input type="text" id="username" placeholder="np. Azornes" value="Azornes">
+            </div>
+            <button class="btn" onclick="generateDemo()">Generuj Badge</button>
+            
+            <div id="badge-preview" class="demo-badge"></div>
+            <div id="message"></div>
+        </div>
+
+        <div class="demo-section">
+            <h2>📖 Jak używać?</h2>
+            <p>Aby uzyskać badge dla swojego profilu, użyj następującego URL:</p>
+            <div class="url-box" id="badge-url">
+                https://azornes.github.io/CustomBadge/<strong>TWOJA_NAZWA</strong>
+            </div>
+            
+            <h3 style="margin-top: 20px;">W Markdown:</h3>
+            <div class="code-block">
+                <pre>![Profile Views](https://azornes.github.io/CustomBadge/TWOJA_NAZWA)</pre>
+            </div>
+
+            <h3 style="margin-top: 20px;">W HTML:</h3>
+            <div class="code-block">
+                <pre><img src="https://azornes.github.io/CustomBadge/TWOJA_NAZWA" alt="Profile Views"></pre>
+            </div>
+        </div>
+
+        <div class="demo-section">
+            <h2>✨ Funkcje</h2>
+            <ul class="feature-list">
+                <li>Dynamiczne generowanie badge'y w czasie rzeczywistym</li>
+                <li>Unikalny pionowy design z ikoną oka</li>
+                <li>Automatyczne pobieranie danych z visitor-badge API</li>
+                <li>Szybkie ładowanie dzięki generowaniu po stronie klienta</li>
+                <li>Brak potrzeby konfiguracji - po prostu użyj URL!</li>
+                <li>100% darmowe i open source</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; color: #888;">
+            <p>Made with ❤️ | <a href="https://github.com/Azornes/CustomBadge" style="color: #667eea;">GitHub</a></p>
+        </div>
+    </div>
+
+    <script src="badge-core.js"></script>
+    <script src="badge-generator.js"></script>
+    <script>
+        function generateDemo() {
+            const username = document.getElementById('username').value.trim();
+            const preview = document.getElementById('badge-preview');
+            const message = document.getElementById('message');
+            const badgeUrl = document.getElementById('badge-url');
+
+            if (!username) {
+                message.innerHTML = '<div class="error">Podaj nazwę użytkownika!</div>';
+                return;
+            }
+
+            // Update URL examples
+            const url = `https://azornes.github.io/CustomBadge/${username}`;
+            badgeUrl.innerHTML = url;
+
+            // Show loading
+            message.innerHTML = '<div class="loading">Generowanie badge...</div>';
+            preview.innerHTML = '';
+
+            // Generate badge
+            generateBadgeForUser(username)
+                .then(svgContent => {
+                    preview.innerHTML = svgContent;
+                    message.innerHTML = '<div class="success">✓ Badge wygenerowany pomyślnie!</div>';
+                })
+                .catch(error => {
+                    message.innerHTML = `<div class="error">Błąd: ${error.message}</div>`;
+                    console.error('Error generating badge:', error);
+                });
+        }
+
+        // Auto-generate on page load
+        window.addEventListener('load', () => {
+            generateDemo();
+        });
+    </script>
+</body>
+</html>

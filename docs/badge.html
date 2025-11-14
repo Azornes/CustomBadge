@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Badge Generator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: transparent;
+        }
+    </style>
+    <script src="badge-core.js"></script>
+</head>
+<body>
+    <script>
+
+        async function fetchProfileViews(username) {
+            const proxies = ['https://corsproxy.io/?', 'https://api.allorigins.win/raw?url='];
+            const badgeUrl = `https://visitor-badge.laobi.icu/badge?page_id=${username}.${username}`;
+            
+            for (const proxyUrl of proxies) {
+                try {
+                    const response = await fetch(proxyUrl + encodeURIComponent(badgeUrl));
+                    if (!response.ok) continue;
+                    
+                    const svgContent = await response.text();
+                    const match = svgContent.match(/<text[^>]*textLength="140\.0"[^>]*>(\d+)<\/text>/);
+                    
+                    if (match) return parseInt(match[1], 10);
+                    
+                    const altMatch = svgContent.match(/>(\d+)</g);
+                    if (altMatch && altMatch.length > 0) {
+                        const lastMatch = altMatch[altMatch.length - 1];
+                        const views = parseInt(lastMatch.replace(/[<>]/g, ''), 10);
+                        if (!isNaN(views)) return views;
+                    }
+                } catch (error) {
+                    continue;
+                }
+            }
+            return 1;
+        }
+
+        async function main() {
+            // Get username from query parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('user') || urlParams.get('username') || 'Azornes';
+            
+            console.log(`Generating badge for: ${username}`);
+            
+            const views = await fetchProfileViews(username);
+            const svgContent = BadgeCore.generateBadgeSVG(views);
+            
+            // Replace page content with SVG
+            document.open();
+            document.write(svgContent);
+            document.close();
+            
+            // Set proper content type
+            const meta = document.createElement('meta');
+            meta.httpEquiv = 'Content-Type';
+            meta.content = 'image/svg+xml; charset=UTF-8';
+            if (document.head) {
+                document.head.appendChild(meta);
+            }
+        }
+
+        main();
+    </script>
+</body>
+</html>
