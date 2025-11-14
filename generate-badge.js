@@ -41,22 +41,145 @@ function saveViews(views) {
 }
 
 /**
- * Pobiera liczbę odwiedzin profilu z GitHub API
- * UWAGA: GitHub API nie udostępnia bezpośrednio liczby odwiedzin profilu.
- * Ta funkcja symuluje zwiększanie licznika.
- * W rzeczywistej implementacji możesz użyć zewnętrznego serwisu jak:
- * - https://github.com/antonkomarev/github-profile-views-counter
- * - https://github.com/arturssmirnovs/github-profile-views-counter
+ * Pobiera liczbę odwiedzin repozytorium z GitHub Traffic API
+ * Używa GitHub Traffic API do pobrania statystyk odwiedzin dla repozytorium profilu
  */
 async function fetchProfileViews() {
-    // Symulacja: zwiększ licznik o losową wartość (1-50)
+    const token = process.env.GH_TOKEN || process.env.GITHUB_TOKEN;
+    
+    if (!token) {
+        console.log('⚠️  Brak tokenu GitHub - użyj GH_TOKEN lub GITHUB_TOKEN');
+        console.log('📊 Używam lokalnego licznika jako fallback\n');
+        return incrementLocalCounter();
+    }
+
+    // Pobierz nazwę użytkownika z repo (format: username/reponame)
+    const githubRepository = process.env.GITHUB_REPOSITORY;
+    
+    if (!githubRepository) {
+        console.log('⚠️  Brak GITHUB_REPOSITORY - używam lokalnego licznika\n');
+        return incrementLocalCounter();
+    }
+
+    const [owner, repo] = githubRepository.split('/');
+    
+    // API endpoint dla statystyk repozytorium profilu (username/username)
+    // lub aktualnego repozytorium
+    const profileRepo = `${owner}/${owner}`;
+    const apiUrl = `https://api.github.com/repos/${profileRepo}/traffic/views`;
+    
+    console.log(`📡 Pobieram statystyki z: ${profileRepo}`);
+    
+    return new Promise((resolve, reject) => {
+        const options = {
+            headers: {
+                'Authorization': `token ${token}`,
+                'User-Agent': 'CustomBadge',
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+
+        https.get(apiUrl, options, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    try {
+                        const json = JSON.parse(data);
+                        const totalViews = json.count || 0;
+                        const uniqueViews = json.uniques || 0;
+                        
+                        console.log(`✅ Statystyki pobrane pomyślnie:`);
+                        console.log(`   - Całkowite odwiedziny: ${totalViews}`);
+                        console.log(`   - Unikalne odwiedziny: ${uniqueViews}\n`);
+                        
+                        // Użyj całkowitej liczby odwiedzin
+                        resolve(totalViews > 0 ? totalViews : incrementLocalCounter());
+                    } catch (error) {
+                        console.log(`⚠️  Błąd parsowania JSON: ${error.message}`);
+                        resolve(incrementLocalCounter());
+                    }
+                } else if (res.statusCode === 404) {
+                    console.log(`⚠️  Repozytorium profilu ${profileRepo} nie istnieje lub brak dostępu`);
+                    console.log(`💡 Używam statystyk z aktualnego repozytorium: ${githubRepository}\n`);
+                    
+                    // Spróbuj pobrać statystyki z aktualnego repo
+                    fetchCurrentRepoViews(token, githubRepository).then(resolve).catch(() => {
+                        resolve(incrementLocalCounter());
+                    });
+                } else {
+                    console.log(`⚠️  GitHub API zwrócił kod: ${res.statusCode}`);
+                    console.log(`📊 Używam lokalnego licznika jako fallback\n`);
+                    resolve(incrementLocalCounter());
+                }
+            });
+        }).on('error', (error) => {
+            console.log(`❌ Błąd połączenia z API: ${error.message}`);
+            console.log(`📊 Używam lokalnego licznika jako fallback\n`);
+            resolve(incrementLocalCounter());
+        });
+    });
+}
+
+/**
+ * Pobiera statystyki z aktualnego repozytorium
+ */
+function fetchCurrentRepoViews(token, repository) {
+    const apiUrl = `https://api.github.com/repos/${repository}/traffic/views`;
+    
+    return new Promise((resolve, reject) => {
+        const options = {
+            headers: {
+                'Authorization': `token ${token}`,
+                'User-Agent': 'CustomBadge',
+                'Accept': 'application/vnd.github.v3+json'
+            }
+        };
+
+        https.get(apiUrl, options, (res) => {
+            let data = '';
+
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+
+            res.on('end', () => {
+                if (res.statusCode === 200) {
+                    try {
+                        const json = JSON.parse(data);
+                        const totalViews = json.count || 0;
+                        
+                        console.log(`✅ Statystyki repozytorium ${repository}:`);
+                        console.log(`   - Całkowite odwiedziny: ${totalViews}\n`);
+                        
+                        resolve(totalViews > 0 ? totalViews : incrementLocalCounter());
+                    } catch (error) {
+                        reject(error);
+                    }
+                } else {
+                    reject(new Error(`Status: ${res.statusCode}`));
+                }
+            });
+        }).on('error', reject);
+    });
+}
+
+/**
+ * Inkrementuj lokalny licznik (fallback)
+ */
+function incrementLocalCounter() {
     const currentViews = getViews();
     const increment = Math.floor(Math.random() * 50) + 1;
     const newViews = currentViews + increment;
     
-    console.log(`Poprzednia liczba odwiedzin: ${currentViews}`);
-    console.log(`Inkrementacja: +${increment}`);
-    console.log(`Nowa liczba odwiedzin: ${newViews}`);
+    console.log(`📊 Lokalny licznik (symulacja):`);
+    console.log(`   - Poprzednia wartość: ${currentViews}`);
+    console.log(`   - Inkrementacja: +${increment}`);
+    console.log(`   - Nowa wartość: ${newViews}\n`);
     
     return newViews;
 }

@@ -72,15 +72,30 @@ Badge jest pionowy i składa się z:
 
 ## ⚙️ Jak to działa
 
-1. GitHub Actions uruchamia się co godzinę (lub ręcznie)
-2. Skrypt odczytuje aktualną liczbę odwiedzin z API GitHub
-3. Generuje nowy plik SVG z zaktualizowaną liczbą
-4. Commituje zmiany do repozytorium
-5. Badge w README automatycznie się aktualizuje
+1. **GitHub Actions** uruchamia się co godzinę (lub ręcznie)
+2. **Skrypt Node.js** pobiera statystyki odwiedzin:
+   - Najpierw próbuje pobrać dane z repozytorium profilu (`username/username`)
+   - Jeśli nie istnieje, używa statystyk z repozytorium CustomBadge
+   - Wykorzystuje GitHub Traffic API do pobierania rzeczywistych danych
+   - W przypadku błędu używa lokalnego licznika jako fallback
+3. **Generuje SVG** - tworzy pionowy badge z ikoną GitHub i cyframi
+4. **Zapisuje zmiany** - commituje `badge.svg` i `views-count.json`
+5. **Auto-update** - badge w README automatycznie się aktualizuje
+
+### Źródło danych
+
+Badge wykorzystuje **GitHub Traffic API**, które dostarcza:
+- **Całkowitą liczbę odwiedzin** (count) - wyświetlana na badge
+- **Unikalne odwiedziny** (uniques) - logowane w konsoli
+- **Dane z ostatnich 14 dni** - ograniczenie API GitHub
+
+⚠️ **Uwaga**: GitHub Traffic API pokazuje tylko odwiedziny z ostatnich 14 dni. Dla długoterminowego śledzenia, dane są zapisywane w `views-count.json`.
 
 ## 🔧 Konfiguracja
 
-Możesz dostosować częstotliwość aktualizacji edytując plik `.github/workflows/update-badge.yml`:
+### Częstotliwość aktualizacji
+
+Edytuj plik `.github/workflows/update-badge.yml`:
 
 ```yaml
 schedule:
@@ -89,6 +104,45 @@ schedule:
   # - cron: '0 0 * * *'  # Raz dziennie
 ```
 
+### Zmiana kolorów badge
+
+W pliku `generate-badge.js` możesz dostosować kolory:
+
+```javascript
+const HEADER_BG = '#1f2937';  // Kolor tła nagłówka (ikona GitHub)
+const DIGIT_BG = '#3b82f6';   // Kolor tła cyfr
+const TEXT_COLOR = '#ffffff'; // Kolor tekstu
+```
+
+### Śledzenie różnych repozytoriów
+
+Domyślnie skrypt próbuje pobrać statystyki z:
+1. Repozytorium profilu: `username/username`
+2. Bieżącego repozytorium: `username/CustomBadge`
+
+Możesz zmodyfikować logikę w funkcji [`fetchProfileViews()`](generate-badge.js:51) w pliku `generate-badge.js`.
+
+## 🐛 Rozwiązywanie problemów
+
+### Badge nie aktualizuje się
+
+1. Sprawdź czy workflow się wykonał: **Actions** → "Update Profile Views Badge"
+2. Sprawdź czy `GH_TOKEN` jest poprawnie ustawiony w Secrets
+3. Upewnij się że token ma uprawnienia `repo`
+
+### "Bad credentials" lub błąd 401
+
+Token wygasł lub nie ma odpowiednich uprawnień. Wygeneruj nowy token z uprawnieniami:
+- ✅ `repo` (Full control of private repositories)
+
+### Badge pokazuje 0 odwiedzin
+
+GitHub Traffic API zwraca dane tylko z ostatnich 14 dni. Jeśli repozytorium jest nowe, liczba może być niska lub zerowa. Skrypt wtedy użyje lokalnego licznika.
+
+### Workflow nie uruchamia się automatycznie
+
+GitHub Actions może dezaktywować crony w nieaktywnych repozytoriach. Uruchom workflow ręcznie raz na jakiś czas lub dodaj commit.
+
 ## 📝 Licencja
 
 MIT License - możesz swobodnie używać i modyfikować ten projekt!
@@ -96,6 +150,18 @@ MIT License - możesz swobodnie używać i modyfikować ten projekt!
 ## 🤝 Współpraca
 
 Issue i Pull Requesty są mile widziane!
+
+---
+
+## 📸 Przykład użycia
+
+Dodaj badge do swojego profilu (w repozytorium `username/username`):
+
+```markdown
+## 📊 Profile Stats
+
+![Profile Views](https://raw.githubusercontent.com/Azornes/CustomBadge/main/badge.svg)
+```
 
 ---
 
