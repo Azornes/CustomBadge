@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="56" height="104" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="GitHub Profile Views">
-  <title>GitHub Profile Views: 64</title>
+  <title>GitHub Profile Views: 11</title>
   
   <!-- Header z ikoną GitHub -->
   <rect x="0" y="0" width="56" height="40" fill="#1f2937" rx="4" ry="4"/>
@@ -13,16 +13,16 @@
     </svg>
   </g>
   
-  <!-- Cyfra 6 -->
+  <!-- Cyfra 1 -->
   <rect x="0" y="40" width="56" height="32" fill="#3b82f6"/>
   
-  <text x="28" y="61" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">6</text>
+  <text x="28" y="61" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
   
-  <!-- Cyfra 4 (ostatnia) -->
+  <!-- Cyfra 1 (ostatnia) -->
   <rect x="0" y="72" width="56" height="4" fill="#3b82f6"/>
   <rect x="0" y="76" width="56" height="24" fill="#3b82f6"/>
   <rect x="0" y="100" width="56" height="4" fill="#3b82f6" rx="4" ry="4"/>
   
-  <text x="28" y="93" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">4</text>
+  <text x="28" y="93" font-family="'Segoe UI', Ubuntu, Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">1</text>
   
 </svg>
