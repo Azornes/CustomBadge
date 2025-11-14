@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0d1117;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -22,36 +22,64 @@
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 12px;
             padding: 40px;
             max-width: 800px;
             width: 100%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
         }
 
         h1 {
-            color: #333;
+            color: #c9d1d9;
             margin-bottom: 10px;
             font-size: 2.5em;
         }
 
         .subtitle {
-            color: #666;
+            color: #8b949e;
             margin-bottom: 30px;
             font-size: 1.1em;
         }
 
         .demo-section {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 30px;
             margin-bottom: 30px;
+        }
+
+        .demo-controls {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .demo-preview {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #161b22;
+            border: 1px solid #30363d;
+            border-radius: 8px;
+            padding: 30px;
+            min-height: 400px;
         }
 
         .demo-badge {
             text-align: center;
             margin: 20px 0;
+        }
+
+        @media (max-width: 768px) {
+            .demo-section {
+                grid-template-columns: 1fr;
+            }
         }
 
         .input-group {
@@ -61,55 +89,91 @@
         label {
             display: block;
             margin-bottom: 8px;
-            color: #555;
+            color: #c9d1d9;
             font-weight: 600;
         }
 
-        input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s;
+        input[type="text"],
+        input[type="radio"] {
+            transition: border-color 0.2s;
         }
 
-        input:focus {
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            border-radius: 6px;
+            font-size: 16px;
+            color: #c9d1d9;
+        }
+
+        input[type="text"]:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1);
         }
 
         .btn {
+            position: relative;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            color: #ffffff;
             border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 700;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            overflow: hidden;
+            box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 25px 0 rgba(102, 126, 234, 0.6);
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.4);
         }
 
         .url-box {
-            background: #f0f0f0;
+            background: #0d1117;
+            border: 1px solid #30363d;
             padding: 15px;
-            border-radius: 8px;
+            border-radius: 6px;
             font-family: 'Courier New', monospace;
+            color: #c9d1d9;
             word-break: break-all;
             margin-top: 15px;
         }
 
         .code-block {
-            background: #2d2d2d;
-            color: #f8f8f2;
+            background: #0d1117;
+            border: 1px solid #30363d;
+            color: #c9d1d9;
             padding: 20px;
-            border-radius: 8px;
+            border-radius: 6px;
             margin-top: 15px;
             overflow-x: auto;
         }
@@ -128,104 +192,82 @@
             padding: 10px 0;
             padding-left: 30px;
             position: relative;
+            color: #c9d1d9;
         }
 
         .feature-list li:before {
             content: "✓";
             position: absolute;
             left: 0;
-            color: #667eea;
+            color: #58a6ff;
             font-weight: bold;
             font-size: 1.2em;
         }
 
         .loading {
             text-align: center;
-            color: #666;
+            color: #8b949e;
             font-style: italic;
         }
 
         .error {
-            color: #e74c3c;
+            color: #ff7b72;
             padding: 10px;
-            background: #ffe0e0;
-            border-radius: 5px;
+            background: rgba(248, 81, 73, 0.1);
+            border: 1px solid rgba(248, 81, 73, 0.4);
+            border-radius: 6px;
             margin-top: 10px;
         }
 
         .success {
-            color: #27ae60;
+            color: #7ee787;
             padding: 10px;
-            background: #d4edda;
-            border-radius: 5px;
+            background: rgba(46, 160, 67, 0.1);
+            border: 1px solid rgba(46, 160, 67, 0.4);
+            border-radius: 6px;
             margin-top: 10px;
+        }
+
+        h2 {
+            color: #c9d1d9;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🎯 Custom Badge Service</h1>
-        <p class="subtitle">Generuj piękne, pionowe badge'e z liczbą odwiedzin profilu GitHub</p>
-
         <div class="demo-section">
-            <h2>🎨 Demo</h2>
-            <div class="input-group">
-                <label for="username">Nazwa użytkownika GitHub:</label>
-                <input type="text" id="username" placeholder="np. Azornes" value="Azornes">
-            </div>
-            
-            <div class="input-group">
-                <label>Styl badge:</label>
-                <div style="display: flex; gap: 20px; margin-top: 10px;">
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="radio" name="style" value="animated" checked style="width: auto; margin-right: 8px;">
-                        <span>🎬 Animated (animowany z gradientami)</span>
-                    </label>
-                    <label style="display: flex; align-items: center; cursor: pointer;">
-                        <input type="radio" name="style" value="classic" style="width: auto; margin-right: 8px;">
-                        <span>📊 Classic (prosty, czysty)</span>
-                    </label>
+            <div class="demo-controls">
+                <h2>🎨 Demo</h2>
+                <div class="input-group">
+                    <label for="username">GitHub Username:</label>
+                    <input type="text" id="username" placeholder="e.g. Azornes" value="Azornes">
                 </div>
+                
+                <div class="input-group">
+                    <label>Badge Style:</label>
+                    <div style="display: flex; gap: 20px; margin-top: 10px; flex-direction: column;">
+                        <label style="display: flex; align-items: center; cursor: pointer; color: #c9d1d9;">
+                            <input type="radio" name="style" value="animated" checked style="width: auto; margin-right: 8px;">
+                            <span>🎬 Animated (with gradients)</span>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer; color: #c9d1d9;">
+                            <input type="radio" name="style" value="classic" style="width: auto; margin-right: 8px;">
+                            <span>📊 Classic (simple, clean)</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <button class="btn" onclick="generateDemo()">
+                    <span>🚀 Generate Badge</span>
+                </button>
+                
+                <div id="message" style="margin-top: 20px;"></div>
             </div>
             
-            <button class="btn" onclick="generateDemo()">Generuj Badge</button>
-            
-            <div id="badge-preview" class="demo-badge"></div>
-            <div id="message"></div>
-        </div>
-
-        <div class="demo-section">
-            <h2>📖 Jak używać?</h2>
-            <p>Aby uzyskać badge dla swojego profilu, użyj następującego URL:</p>
-            <div class="url-box" id="badge-url">
-                https://azornes.github.io/CustomBadge/<strong>TWOJA_NAZWA</strong>
+            <div class="demo-preview">
+                <h3 style="color: #c9d1d9; margin-bottom: 20px;">Badge Preview</h3>
+                <div id="badge-preview" class="demo-badge"></div>
             </div>
-            
-            <h3 style="margin-top: 20px;">W Markdown:</h3>
-            <div class="code-block">
-                <pre>![Profile Views](https://azornes.github.io/CustomBadge/TWOJA_NAZWA)</pre>
-            </div>
-
-            <h3 style="margin-top: 20px;">W HTML:</h3>
-            <div class="code-block">
-                <pre><img src="https://azornes.github.io/CustomBadge/TWOJA_NAZWA" alt="Profile Views"></pre>
-            </div>
-        </div>
-
-        <div class="demo-section">
-            <h2>✨ Funkcje</h2>
-            <ul class="feature-list">
-                <li>Dynamiczne generowanie badge'y w czasie rzeczywistym</li>
-                <li>Unikalny pionowy design z ikoną oka</li>
-                <li>Automatyczne pobieranie danych z visitor-badge API</li>
-                <li>Szybkie ładowanie dzięki generowaniu po stronie klienta</li>
-                <li>Brak potrzeby konfiguracji - po prostu użyj URL!</li>
-                <li>100% darmowe i open source</li>
-            </ul>
-        </div>
-
-        <div style="text-align: center; margin-top: 30px; color: #888;">
-            <p>Made with ❤️ | <a href="https://github.com/Azornes/CustomBadge" style="color: #667eea;">GitHub</a></p>
         </div>
     </div>
 
@@ -236,7 +278,6 @@
             const username = document.getElementById('username').value.trim();
             const preview = document.getElementById('badge-preview');
             const message = document.getElementById('message');
-            const badgeUrl = document.getElementById('badge-url');
             const styleRadios = document.getElementsByName('style');
             let selectedStyle = 'animated';
             
@@ -249,26 +290,22 @@
             }
 
             if (!username) {
-                message.innerHTML = '<div class="error">Podaj nazwę użytkownika!</div>';
+                message.innerHTML = '<div class="error">Please enter a username!</div>';
                 return;
             }
 
-            // Update URL examples
-            const url = `https://azornes.github.io/CustomBadge/${username}`;
-            badgeUrl.innerHTML = url;
-
             // Show loading
-            message.innerHTML = `<div class="loading">Generowanie badge (${selectedStyle})...</div>`;
+            message.innerHTML = `<div class="loading">Generating badge (${selectedStyle})...</div>`;
             preview.innerHTML = '';
 
             // Generate badge with selected style
             generateBadgeForUser(username, selectedStyle)
                 .then(svgContent => {
                     preview.innerHTML = svgContent;
-                    message.innerHTML = `<div class="success">✓ Badge wygenerowany pomyślnie w stylu ${selectedStyle}!</div>`;
+                    message.innerHTML = `<div class="success">✓ Badge generated successfully in ${selectedStyle} style!</div>`;
                 })
                 .catch(error => {
-                    message.innerHTML = `<div class="error">Błąd: ${error.message}</div>`;
+                    message.innerHTML = `<div class="error">Error: ${error.message}</div>`;
                     console.error('Error generating badge:', error);
                 });
         }
