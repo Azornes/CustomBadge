@@ -32,6 +32,9 @@ jobs:
           node-version: '20'
       
       - name: 📊 Generate badge
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "Generowanie badge..."
           node generate-badge.js
